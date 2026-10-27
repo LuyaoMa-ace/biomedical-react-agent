@@ -470,6 +470,13 @@ code("""
         display(Image(str(ROOT / "results" / "fig_tool_heatmap_agent_full_granite.png"), width=620))
 """)
 md("""
+    **Reading the table.**
+    - Out of the box Granite is far worse than MedGemma (EM 0.550 vs 0.684, paired -0.134, significant): it uses all tools (2.06 per question) but treats the two query-rewriting tools as if they returned evidence, so 133 questions never reach the index.
+    - With the guardrail (retrieve once if there is no document evidence) Granite reaches 0.700, still below MedGemma + guardrail (0.742): in 65 questions (13%) it relied on PubMed papers alone (EM 0.431, gold paper seen in about 10%), and the guardrail does not fire when evidence exists.
+    - A *post-hoc* variant (designed after this diagnosis) also retrieves when the local index was never queried: Granite reaches **0.744**, inside the range predicted before the run (0.735-0.745), +0.044 over the original guardrail (CI [0.022, 0.068]) and equal to MedGemma + guardrail (0.742). MedGemma never used PubMed without the index (0 questions), so the variant is only relevant for Granite.
+    - So most of the Granite deficit was the tool-contract failure, not a lack of model ability; the remaining prompt-fit question is listed under limitations.
+""")
+md("""
     # 📝 12. An Extra Look: Paraphrased Questions
 
     About half of the questions are paraphrased. Are they harder, and is the difficulty in *finding* the paper or in *reading* it?
