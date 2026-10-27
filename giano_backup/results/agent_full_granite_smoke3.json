@@ -1,0 +1,213 @@
+{
+ "overall": {
+  "EM": 0.5,
+  "Contains": 0.5,
+  "ROUGE-1": 0.582093253968254,
+  "ROUGE-L": 0.582093253968254,
+  "tool_calls": 2.3125,
+  "steps": 3.3125,
+  "latency_s": 3.0736481845378876,
+  "leak": 0.0,
+  "n": 32
+ },
+ "per_category": {
+  "0": {
+   "EM": 0.0,
+   "Contains": 0.0,
+   "ROUGE-1": 0.0,
+   "ROUGE-L": 0.0,
+   "tool_calls": 4.0,
+   "steps": 5.0,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 1
+  },
+  "1": {
+   "EM": 1.0,
+   "Contains": 1.0,
+   "ROUGE-1": 1.0,
+   "ROUGE-L": 1.0,
+   "tool_calls": 1.0,
+   "steps": 2.0,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 1
+  },
+  "2": {
+   "EM": 0.6666666666666666,
+   "Contains": 0.6666666666666666,
+   "ROUGE-1": 0.6666666666666666,
+   "ROUGE-L": 0.6666666666666666,
+   "tool_calls": 2.6666666666666665,
+   "steps": 3.6666666666666665,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 6
+  },
+  "3": {
+   "EM": 0.5,
+   "Contains": 0.5,
+   "ROUGE-1": 0.5,
+   "ROUGE-L": 0.5,
+   "tool_calls": 2.0,
+   "steps": 3.0,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 2
+  },
+  "4": {
+   "EM": 0.0,
+   "Contains": 0.0,
+   "ROUGE-1": 0.1111111111111111,
+   "ROUGE-L": 0.1111111111111111,
+   "tool_calls": 2.6666666666666665,
+   "steps": 3.6666666666666665,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 3
+  },
+  "5": {
+   "EM": 0.0,
+   "Contains": 0.0,
+   "ROUGE-1": 0.1904761904761905,
+   "ROUGE-L": 0.1904761904761905,
+   "tool_calls": 2.3333333333333335,
+   "steps": 3.3333333333333335,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 3
+  },
+  "6": {
+   "EM": 0.7142857142857143,
+   "Contains": 0.7142857142857143,
+   "ROUGE-1": 0.761904761904762,
+   "ROUGE-L": 0.761904761904762,
+   "tool_calls": 2.0,
+   "steps": 3.0,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 7
+  },
+  "7": {
+   "EM": 0.5,
+   "Contains": 0.5,
+   "ROUGE-1": 0.5,
+   "ROUGE-L": 0.5,
+   "tool_calls": 1.5,
+   "steps": 2.5,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 2
+  },
+  "9": {
+   "EM": 0.3333333333333333,
+   "Contains": 0.3333333333333333,
+   "ROUGE-1": 0.6296296296296297,
+   "ROUGE-L": 0.6296296296296297,
+   "tool_calls": 2.3333333333333335,
+   "steps": 3.3333333333333335,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 3
+  },
+  "10": {
+   "EM": 0.75,
+   "Contains": 0.75,
+   "ROUGE-1": 0.875,
+   "ROUGE-L": 0.875,
+   "tool_calls": 2.5,
+   "steps": 3.5,
+   "latency_s": 3.0736481845378876,
+   "leak": 0.0,
+   "n": 4
+  }
+ },
+ "retrieval": {
+  "Recall@1": 0.28125,
+  "Recall@5": 0.40625,
+  "Recall@10": 0.40625,
+  "MRR": 0.32544699107142855,
+  "MAP": 0.32544699107142855,
+  "nDCG@1": 0.28125,
+  "nDCG@5": 0.3443057050251875,
+  "nDCG@10": 0.3443057050251875
+ },
+ "failure_rates": {
+  "parse_error": 0.0,
+  "unknown_tool": 0.0,
+  "repeat_call": 0.0,
+  "tool_error": 0.0,
+  "forced_final": 0.0,
+  "loop_break": 0.0,
+  "no_tool_answer": 0.0
+ },
+ "gold_seen": 0.375,
+ "tool_usage_per_question": {
+  "retrieve_from_index": 0.4375,
+  "query_reformulator": 0.84375,
+  "generate_reasoning_query": 0.8125,
+  "fetch_pubmed_live": 0.21875
+ },
+ "tool_usage_by_category": {
+  "0": {
+   "retrieve_from_index": 0.0,
+   "query_reformulator": 1.0,
+   "generate_reasoning_query": 1.0,
+   "fetch_pubmed_live": 2.0
+  },
+  "1": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.0,
+   "generate_reasoning_query": 0.0,
+   "fetch_pubmed_live": 0.0
+  },
+  "2": {
+   "retrieve_from_index": 0.5,
+   "query_reformulator": 0.8333333333333334,
+   "generate_reasoning_query": 0.8333333333333334,
+   "fetch_pubmed_live": 0.5
+  },
+  "3": {
+   "retrieve_from_index": 0.0,
+   "query_reformulator": 1.0,
+   "generate_reasoning_query": 1.0,
+   "fetch_pubmed_live": 0.0
+  },
+  "4": {
+   "retrieve_from_index": 0.3333333333333333,
+   "query_reformulator": 1.0,
+   "generate_reasoning_query": 1.0,
+   "fetch_pubmed_live": 0.3333333333333333
+  },
+  "5": {
+   "retrieve_from_index": 0.0,
+   "query_reformulator": 1.0,
+   "generate_reasoning_query": 1.0,
+   "fetch_pubmed_live": 0.3333333333333333
+  },
+  "6": {
+   "retrieve_from_index": 0.7142857142857143,
+   "query_reformulator": 0.7142857142857143,
+   "generate_reasoning_query": 0.5714285714285714,
+   "fetch_pubmed_live": 0.0
+  },
+  "7": {
+   "retrieve_from_index": 0.5,
+   "query_reformulator": 0.5,
+   "generate_reasoning_query": 0.5,
+   "fetch_pubmed_live": 0.0
+  },
+  "9": {
+   "retrieve_from_index": 0.3333333333333333,
+   "query_reformulator": 1.0,
+   "generate_reasoning_query": 1.0,
+   "fetch_pubmed_live": 0.0
+  },
+  "10": {
+   "retrieve_from_index": 0.5,
+   "query_reformulator": 1.0,
+   "generate_reasoning_query": 1.0,
+   "fetch_pubmed_live": 0.0
+  }
+ }
+}

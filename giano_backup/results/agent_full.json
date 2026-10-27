@@ -1,0 +1,230 @@
+{
+ "overall": {
+  "EM": 0.684,
+  "Contains": 0.73,
+  "ROUGE-1": 0.776923452570821,
+  "ROUGE-L": 0.776923452570821,
+  "tool_calls": 1.292,
+  "steps": 3.208,
+  "latency_s": 3.4816515231132508,
+  "leak": 0.0,
+  "n": 500
+ },
+ "per_category": {
+  "0": {
+   "EM": 0.7,
+   "Contains": 0.85,
+   "ROUGE-1": 0.8411904761904762,
+   "ROUGE-L": 0.8411904761904762,
+   "tool_calls": 1.25,
+   "steps": 3.05,
+   "latency_s": 3.58028055280447,
+   "leak": 0.0,
+   "n": 20
+  },
+  "1": {
+   "EM": 0.65,
+   "Contains": 0.75,
+   "ROUGE-1": 0.85,
+   "ROUGE-L": 0.85,
+   "tool_calls": 1.15,
+   "steps": 2.9,
+   "latency_s": 3.6361394645646214,
+   "leak": 0.0,
+   "n": 20
+  },
+  "2": {
+   "EM": 0.6987951807228916,
+   "Contains": 0.7469879518072289,
+   "ROUGE-1": 0.764889862480224,
+   "ROUGE-L": 0.764889862480224,
+   "tool_calls": 1.2530120481927711,
+   "steps": 3.1686746987951806,
+   "latency_s": 3.5069729220346515,
+   "leak": 0.0,
+   "n": 83
+  },
+  "3": {
+   "EM": 0.6935483870967742,
+   "Contains": 0.7096774193548387,
+   "ROUGE-1": 0.7924614811711586,
+   "ROUGE-L": 0.7924614811711586,
+   "tool_calls": 1.3064516129032258,
+   "steps": 3.193548387096774,
+   "latency_s": 3.4929085575164325,
+   "leak": 0.0,
+   "n": 62
+  },
+  "4": {
+   "EM": 0.6185567010309279,
+   "Contains": 0.6391752577319587,
+   "ROUGE-1": 0.7084192439862543,
+   "ROUGE-L": 0.7084192439862543,
+   "tool_calls": 1.3195876288659794,
+   "steps": 3.2371134020618557,
+   "latency_s": 3.493753159745145,
+   "leak": 0.0,
+   "n": 97
+  },
+  "5": {
+   "EM": 0.6721311475409836,
+   "Contains": 0.7377049180327869,
+   "ROUGE-1": 0.792654886097509,
+   "ROUGE-L": 0.792654886097509,
+   "tool_calls": 1.3114754098360655,
+   "steps": 3.3114754098360657,
+   "latency_s": 3.3904668577626103,
+   "leak": 0.0,
+   "n": 61
+  },
+  "6": {
+   "EM": 0.8363636363636363,
+   "Contains": 0.8363636363636363,
+   "ROUGE-1": 0.8621645021645021,
+   "ROUGE-L": 0.8621645021645021,
+   "tool_calls": 1.2545454545454546,
+   "steps": 3.1636363636363636,
+   "latency_s": 3.4077200361950832,
+   "leak": 0.0,
+   "n": 55
+  },
+  "7": {
+   "EM": 0.65,
+   "Contains": 0.7,
+   "ROUGE-1": 0.6973684210526316,
+   "ROUGE-L": 0.6973684210526316,
+   "tool_calls": 1.3,
+   "steps": 3.3,
+   "latency_s": 3.4556718161329627,
+   "leak": 0.0,
+   "n": 20
+  },
+  "8": {
+   "EM": 0.5,
+   "Contains": 0.55,
+   "ROUGE-1": 0.6085714285714287,
+   "ROUGE-L": 0.6085714285714287,
+   "tool_calls": 1.5,
+   "steps": 3.55,
+   "latency_s": 3.500572945922613,
+   "leak": 0.0,
+   "n": 20
+  },
+  "9": {
+   "EM": 0.7142857142857143,
+   "Contains": 0.8333333333333334,
+   "ROUGE-1": 0.872077922077922,
+   "ROUGE-L": 0.872077922077922,
+   "tool_calls": 1.2142857142857142,
+   "steps": 3.119047619047619,
+   "latency_s": 3.489415518673403,
+   "leak": 0.0,
+   "n": 42
+  },
+  "10": {
+   "EM": 0.7,
+   "Contains": 0.7,
+   "ROUGE-1": 0.7392857142857142,
+   "ROUGE-L": 0.7392857142857142,
+   "tool_calls": 1.45,
+   "steps": 3.3,
+   "latency_s": 3.5020397139713166,
+   "leak": 0.0,
+   "n": 20
+  }
+ },
+ "retrieval": {
+  "Recall@1": 0.716,
+  "Recall@5": 0.822,
+  "Recall@10": 0.832,
+  "MRR": 0.7613500942518692,
+  "MAP": 0.7613500942518692,
+  "nDCG@1": 0.716,
+  "nDCG@5": 0.7750109480063183,
+  "nDCG@10": 0.77836430292856
+ },
+ "failure_rates": {
+  "parse_error": 0.082,
+  "unknown_tool": 0.0,
+  "repeat_call": 0.806,
+  "tool_error": 0.0,
+  "forced_final": 0.774,
+  "loop_break": 0.774,
+  "no_tool_answer": 0.0
+ },
+ "gold_seen": 0.808,
+ "tool_usage_per_question": {
+  "retrieve_from_index": 1.068,
+  "fetch_pubmed_live": 0.054,
+  "query_reformulator": 0.162,
+  "generate_reasoning_query": 0.008
+ },
+ "tool_usage_by_category": {
+  "0": {
+   "retrieve_from_index": 1.1,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.15,
+   "generate_reasoning_query": 0.0
+  },
+  "1": {
+   "retrieve_from_index": 1.05,
+   "fetch_pubmed_live": 0.05,
+   "query_reformulator": 0.05,
+   "generate_reasoning_query": 0.0
+  },
+  "2": {
+   "retrieve_from_index": 1.0,
+   "fetch_pubmed_live": 0.024096385542168676,
+   "query_reformulator": 0.2289156626506024,
+   "generate_reasoning_query": 0.0
+  },
+  "3": {
+   "retrieve_from_index": 1.0806451612903225,
+   "fetch_pubmed_live": 0.016129032258064516,
+   "query_reformulator": 0.16129032258064516,
+   "generate_reasoning_query": 0.04838709677419355
+  },
+  "4": {
+   "retrieve_from_index": 1.0618556701030928,
+   "fetch_pubmed_live": 0.041237113402061855,
+   "query_reformulator": 0.20618556701030927,
+   "generate_reasoning_query": 0.010309278350515464
+  },
+  "5": {
+   "retrieve_from_index": 0.9836065573770492,
+   "fetch_pubmed_live": 0.08196721311475409,
+   "query_reformulator": 0.2459016393442623,
+   "generate_reasoning_query": 0.0
+  },
+  "6": {
+   "retrieve_from_index": 1.0909090909090908,
+   "fetch_pubmed_live": 0.09090909090909091,
+   "query_reformulator": 0.07272727272727272,
+   "generate_reasoning_query": 0.0
+  },
+  "7": {
+   "retrieve_from_index": 1.0,
+   "fetch_pubmed_live": 0.1,
+   "query_reformulator": 0.2,
+   "generate_reasoning_query": 0.0
+  },
+  "8": {
+   "retrieve_from_index": 1.3,
+   "fetch_pubmed_live": 0.1,
+   "query_reformulator": 0.1,
+   "generate_reasoning_query": 0.0
+  },
+  "9": {
+   "retrieve_from_index": 1.0714285714285714,
+   "fetch_pubmed_live": 0.07142857142857142,
+   "query_reformulator": 0.07142857142857142,
+   "generate_reasoning_query": 0.0
+  },
+  "10": {
+   "retrieve_from_index": 1.35,
+   "fetch_pubmed_live": 0.1,
+   "query_reformulator": 0.0,
+   "generate_reasoning_query": 0.0
+  }
+ }
+}

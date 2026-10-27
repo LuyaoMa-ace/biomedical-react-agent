@@ -1,0 +1,202 @@
+{
+ "overall": {
+  "EM": 0.5625,
+  "Contains": 0.6875,
+  "ROUGE-1": 0.6883534228928966,
+  "ROUGE-L": 0.6883534228928966,
+  "tool_calls": 1.53125,
+  "steps": 3.46875,
+  "latency_s": 4.0333520248532295,
+  "leak": 0.0,
+  "n": 32
+ },
+ "per_category": {
+  "0": {
+   "EM": 1.0,
+   "Contains": 1.0,
+   "ROUGE-1": 1.0,
+   "ROUGE-L": 1.0,
+   "tool_calls": 1.0,
+   "steps": 3.0,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 1
+  },
+  "1": {
+   "EM": 1.0,
+   "Contains": 1.0,
+   "ROUGE-1": 1.0,
+   "ROUGE-L": 1.0,
+   "tool_calls": 1.0,
+   "steps": 3.0,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 1
+  },
+  "2": {
+   "EM": 0.6666666666666666,
+   "Contains": 0.6666666666666666,
+   "ROUGE-1": 0.7666666666666666,
+   "ROUGE-L": 0.7666666666666666,
+   "tool_calls": 1.8333333333333333,
+   "steps": 4.166666666666667,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 6
+  },
+  "3": {
+   "EM": 0.5,
+   "Contains": 0.5,
+   "ROUGE-1": 0.5,
+   "ROUGE-L": 0.5,
+   "tool_calls": 1.0,
+   "steps": 2.0,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 2
+  },
+  "4": {
+   "EM": 0.6666666666666666,
+   "Contains": 0.6666666666666666,
+   "ROUGE-1": 0.7368421052631579,
+   "ROUGE-L": 0.7368421052631579,
+   "tool_calls": 2.3333333333333335,
+   "steps": 4.333333333333333,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 3
+  },
+  "5": {
+   "EM": 0.3333333333333333,
+   "Contains": 1.0,
+   "ROUGE-1": 0.6666666666666666,
+   "ROUGE-L": 0.6666666666666666,
+   "tool_calls": 2.0,
+   "steps": 4.0,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 3
+  },
+  "6": {
+   "EM": 0.42857142857142855,
+   "Contains": 0.5714285714285714,
+   "ROUGE-1": 0.5714285714285714,
+   "ROUGE-L": 0.5714285714285714,
+   "tool_calls": 1.1428571428571428,
+   "steps": 2.857142857142857,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 7
+  },
+  "7": {
+   "EM": 0.0,
+   "Contains": 0.0,
+   "ROUGE-1": 0.0,
+   "ROUGE-L": 0.0,
+   "tool_calls": 1.5,
+   "steps": 3.5,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 2
+  },
+  "9": {
+   "EM": 0.6666666666666666,
+   "Contains": 0.6666666666666666,
+   "ROUGE-1": 0.9696969696969697,
+   "ROUGE-L": 0.9696969696969697,
+   "tool_calls": 1.3333333333333333,
+   "steps": 3.3333333333333335,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 3
+  },
+  "10": {
+   "EM": 0.75,
+   "Contains": 1.0,
+   "ROUGE-1": 0.8269230769230769,
+   "ROUGE-L": 0.8269230769230769,
+   "tool_calls": 1.5,
+   "steps": 3.5,
+   "latency_s": 4.0333520248532295,
+   "leak": 0.0,
+   "n": 4
+  }
+ },
+ "retrieval": {
+  "Recall@1": 0.8125,
+  "Recall@5": 0.96875,
+  "Recall@10": 1.0,
+  "MRR": 0.8888888888888888,
+  "MAP": 0.8888888888888888,
+  "nDCG@1": 0.8125,
+  "nDCG@5": 0.9069912191964322,
+  "nDCG@10": 0.9163984065609316
+ },
+ "failure_rates": {
+  "parse_error": 0.15625,
+  "unknown_tool": 0.0,
+  "repeat_call": 0.8125,
+  "tool_error": 0.0,
+  "forced_final": 0.8125,
+  "loop_break": 0.8125,
+  "no_tool_answer": 0.0
+ },
+ "gold_seen": 0.96875,
+ "tool_usage_per_question": {
+  "retrieve_from_index": 1.375,
+  "fetch_pubmed_live": 0.09375,
+  "query_reformulator": 0.0625
+ },
+ "tool_usage_by_category": {
+  "0": {
+   "retrieve_from_index": 1.0,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.0
+  },
+  "1": {
+   "retrieve_from_index": 1.0,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.0
+  },
+  "2": {
+   "retrieve_from_index": 1.6666666666666667,
+   "fetch_pubmed_live": 0.16666666666666666,
+   "query_reformulator": 0.0
+  },
+  "3": {
+   "retrieve_from_index": 1.0,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.0
+  },
+  "4": {
+   "retrieve_from_index": 1.3333333333333333,
+   "fetch_pubmed_live": 0.3333333333333333,
+   "query_reformulator": 0.6666666666666666
+  },
+  "5": {
+   "retrieve_from_index": 2.0,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.0
+  },
+  "6": {
+   "retrieve_from_index": 1.0,
+   "fetch_pubmed_live": 0.14285714285714285,
+   "query_reformulator": 0.0
+  },
+  "7": {
+   "retrieve_from_index": 1.5,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.0
+  },
+  "9": {
+   "retrieve_from_index": 1.3333333333333333,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.0
+  },
+  "10": {
+   "retrieve_from_index": 1.5,
+   "fetch_pubmed_live": 0.0,
+   "query_reformulator": 0.0
+  }
+ }
+}

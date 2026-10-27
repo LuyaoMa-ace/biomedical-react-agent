@@ -1,0 +1,4 @@
+config,metric,diff,ci_lo,ci_hi,only_sys,only_ref,p_mcnemar,significant
+Agent: index only,EM,0.068,0.038,0.098,46,12,8.219663963332515e-06,True
+Agent: index only,Contains,0.072,0.042,0.102,46,12,8.219663963332515e-06,True
+Agent: index only,ROUGE-1,0.06506334776334777,0.039807940115440116,0.09102548701298702,46,12,8.219663963332515e-06,True
