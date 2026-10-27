@@ -462,7 +462,17 @@ md("""
     | 78 (worse) | Cytosolic leaflet of the plasma membrane | same (EM 1) | `Plasma membrane` (EM 0) | The gold paper was retrieved in both systems, but the agent's answer came out less specific; the agent used its own query wording, which probably changed the retrieved set (not verified). |
     | 423 (worse) | Surgical decompression | same (EM 1) | `Anterior approach` (EM 0) | Reformulator loop, then guardrail retrieval with a query that is almost the question; a reading error on mostly equivalent evidence. |
 
-    **Take-aways.** (i) In both "agent better" examples shown, the difference is answer wording, not better orchestration (we did not audit all 13). (ii) Looping on an identical call is the norm for MedGemma (81% of questions) but does not by itself change the answer. (iii) The clearest *real* harm is an unnecessary extra tool adding irrelevant evidence.
+    **Granite scheduler + local-index guardrail** (`results/trace_examples_agent_full_granite_guardlocal.md`): better on 16 questions, worse on 26.
+
+    | qid | gold | Vanilla RAG | Agent | What differed |
+    |---|---|---|---|---|
+    | 333 (better) | DRS1 | `DRS1 gene` (EM 0) | `DRS1` (EM 1) | Granite follows the intended chain (reformulate → reasoning → retrieve → final answer in 4 steps). The gain is again answer wording. |
+    | 137 (better) | H-2K(b)-tsA58 transgenic mouse (immortomouse) | `H-2K(b)-tsA58 transgenic mice` (EM 0) | `Immortomice` (EM 1) | Granite stopped after the two rewriting tools without retrieving; the guardrail retrieved once. EM counts the synonym; wording again. |
+    | 189 (worse) | Angiotensin and acetylcholine | same (EM 1) | `P2X5 receptors` (EM 0) | The reformulated query ("CNS neurotransmitter regulation interaction substances pair") is more generic than the question; the gold paper was never retrieved. **Rewriting lost discriminative content.** |
+    | 319 (worse) | Acinetobacter baumannii | same (EM 1) | `Pseudomonas aeruginosa` (EM 0) | Granite put its own wrong guess into the PubMed query ("Pseudomonas aeruginosa multidrug resistance …"), got confirming papers, and the gold paper was never retrieved: **self-confirming search**. |
+    | 39 (worse) | Culture-specific intravenous antibiotics and surgical joint irrigation with graft retention | same (EM 1) | `Culture-specific intravenous (IV) antibiotics` (EM 0) | Gold paper retrieved; the answer is correct but incomplete (drops the surgical part), so exact match fails. |
+
+    **Take-aways.** (i) In both "agent better" examples shown, the difference is answer wording, not better orchestration (we did not audit all 13). (ii) Looping on an identical call is the norm for MedGemma (81% of questions) but does not by itself change the answer. (iii) The clearest *real* harms are an unnecessary extra tool adding irrelevant evidence (MedGemma, qid 53), a rewritten query that is more generic than the question (Granite, qid 189) and a scheduler that puts its own wrong guess into the search query (Granite, qid 319).
 """)
 
 # --------------------------------------------------------------------------------------------- 11-12
