@@ -542,8 +542,12 @@ md("""
     the scheduler prompt was developed with MedGemma and reused unchanged for Granite, so part of the Granite gap may be prompt fit; only zero-shot small schedulers were tested (no few-shot tool demos, no fine-tuning, no larger LLM);
     the guardrail is a post-hoc fix (its effect was predicted before the run); EM underestimates correct answers with different wording.
 
-    **Related work.** `TODO: 6-8 lines from LITERATURE_REVIEW.md` — PaperSearchQA (Burgess et al.), ReAct, Self-RAG, Adaptive-RAG, Search-R1,
-    *Small LLMs are weak tool learners* (α-UMi), Weller et al. on query expansion with strong retrievers, BFCL.
+    **Related work.**
+    - *Benchmark.* PaperSearchQA (Burgess et al., 2026) introduces the questions; it searches 16M abstracts and trains a search agent with RL (Search-R1, Jin et al., 2025). We do not train anything and search 5,000 abstracts, so absolute numbers are not comparable.
+    - *Agent loop.* We use the ReAct pattern (Yao et al., 2022). Splitting a *planner* from an answer writer follows the multi-LLM idea of α-UMi (Shen et al., 2024), whose authors report that small models are weak tool users; FireAct (Chen et al., 2023) fine-tunes agents for this reason.
+    - *When to retrieve.* Self-RAG (Asai et al., 2024) and Adaptive-RAG (Jeong et al., 2024) learn to decide whether and how much to retrieve. Our zero-shot schedulers have no such training, which is consistent with the failures we observe (stopping without evidence, looping).
+    - *Query rewriting.* Rewriting helps weak retrievers, but Weller et al. (2024) show that expansions can hurt strong ones; with Recall@10 of 0.97 our reformulate and reasoning chains are not better than plain retrieval.
+    - *Evaluation.* Exact match underestimates correct answers (Kamalloo et al., 2023), hence the Contains and ROUGE columns; we use paired bootstrap and McNemar tests rather than comparing point estimates.
 """)
 md("""
     # ♻️ 14. Reproducibility

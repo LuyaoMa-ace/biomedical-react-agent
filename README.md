@@ -27,7 +27,28 @@ PaperSearchQA, a biomedical factoid QA benchmark built on PubMed abstracts.
 
 ## 2. Main results
 
-`TODO: paste the final ladder table (results/exp_ladder.md) and the three experiment summaries.`
+500 questions, answer prompt v3, EM = exact match (full tables in `results/exp_*.md`; refresh after the ablation runs).
+
+| System | EM | Contains | Tools/q | Steps | Latency (s/q) | Recall@1 | Recall@10 | nDCG@10 |
+|---|---|---|---|---|---|---|---|---|
+| Baseline 0 (no tools) | 0.296 | 0.310 | 0 | 1 | 0.09 | – | – | – |
+| Vanilla RAG | 0.764 | 0.820 | 1.00 | 1 | 0.19 | 0.830 | 0.968 | 0.904 |
+| Reformulate → retrieve | 0.766 | 0.822 | 2.00 | 2 | 0.29 | 0.840 | 0.968 | 0.908 |
+| Reasoning → retrieve | 0.736 | 0.804 | 2.00 | 2 | 0.61 | 0.820 | 0.960 | 0.892 |
+| FDA-augmented RAG | 0.760 | 0.816 | 2.00 | 2 | 0.54 | 0.830 | 0.968 | 0.904 |
+| Agent: index only (MedGemma) | 0.752 | 0.802 | 1.26 | 3.05 | 3.21 | 0.832 | 0.968 | 0.904 |
+| Agent: full (MedGemma) | 0.684 | 0.730 | 1.29 | 3.21 | 3.48 | 0.716 | 0.832 | 0.778 |
+| Agent: full + guardrail (MedGemma) | 0.742 | 0.796 | 1.44 | 3.21 | 3.41 | 0.832 | 0.968 | 0.905 |
+| Agent: full (Granite) | 0.550 | 0.580 | 2.06 | 3.09 | 2.93 | 0.448 | 0.526 | 0.486 |
+| Agent: full + guardrail (Granite) | 0.700 | 0.750 | 2.38 | 3.07 | 2.97 | 0.698 | 0.830 | 0.767 |
+| Agent: full + local-index guardrail (Granite, post hoc) | 0.744 | 0.786 | 2.51 | 3.07 | 3.00 | 0.796 | 0.946 | 0.874 |
+
+**Findings.**
+1. *Retrieval is what matters*: EM 0.30 → 0.76 (paired +0.47, CI excludes 0). Reformulation, reasoning queries and FDA labels do not improve on plain retrieval (best oracle routing over the four chains: 0.798, +3.2 points).
+2. *Dynamic orchestration does not beat fixed pipelines.* The unmodified full agent is significantly worse than every chain (−0.05 to −0.08). Cause (trace analysis): the rewriting tools return a *query*, not documents; small schedulers treat the call as "searched" and stop with no evidence (MedGemma: 62 questions, EM 0.31; Granite: 133 questions, EM 0.23).
+3. *A guardrail that retrieves once when no document evidence exists* (tool semantics unchanged; effect predicted before the run) lifts MedGemma by +0.058 [0.032, 0.084] to 0.742 and Granite to 0.700 (0.744 with the post-hoc local-index variant). Both then sit about 2 points below Vanilla RAG, not significantly (p = 0.10 and 0.16), at 15–18× the latency.
+4. *Trace analysis*: the number of reasoning steps is unrelated to retrieval quality (Spearman −0.03, n.s.); most remaining errors are reading errors (~20%), not scheduling errors.
+5. *Robustness*: answer-prompt wording moves EM by up to 7 points (see Methodological notes), but the ranking of the fixed chains and the "no chain beats Vanilla" conclusion hold under a second prompt.
 
 ## 3. Repository layout
 
