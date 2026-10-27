@@ -452,7 +452,17 @@ code("""
 """)
 md("""
     ### 🧾 Side by side: fixed chain vs dynamic agent
-    <!-- TODO: paste 2-3 annotated pairs from results/trace_examples_agent_full.md (agent better / agent worse), with a sentence on where the decision differed -->
+    **Annotated pairs** (MedGemma agent + guardrail vs Vanilla RAG; full traces in `results/trace_examples_agent_full_guard.md`). Of the 500 questions the agent is better on 13 and worse on 24.
+
+    | qid | gold | Vanilla RAG | Agent | What differed |
+    |---|---|---|---|---|
+    | 333 (better) | DRS1 | `DRS1 gene` (EM 0) | `DRS1` (EM 1) | Same paper, same facts. The agent is "better" only through answer wording (no extra word); it also repeated the same query twice and was stopped by the loop breaker. |
+    | 272 (better) | Opsonophagocytic activity (OPA) assay | `OPA` (EM 0) | `OPA assay` (EM 1) | The agent called only `query_reformulator` (3 times, 2 repeats), so it had no documents; the **guardrail** ran `retrieve_from_index` with the rewritten query and the gold paper was found. Again an answer-form difference decides EM. |
+    | 53 (worse) | covind19.org | `covind19.org` (EM 1) | `datahub.io` (EM 0) | After a first retrieval the agent also called `fetch_pubmed_live` and got generic COVID-vaccine papers; the answer generator then saw unrelated evidence beside the gold paper (gold seen = True) and answered wrongly: **evidence pollution** from an unnecessary tool. |
+    | 78 (worse) | Cytosolic leaflet of the plasma membrane | same (EM 1) | `Plasma membrane` (EM 0) | The gold paper was retrieved in both systems, but the agent's own query wording changed the retrieved set and the answer came out less specific. |
+    | 423 (worse) | Surgical decompression | same (EM 1) | `Anterior approach` (EM 0) | Reformulator loop, then guardrail retrieval with a query that is almost the question; a reading error on mostly equivalent evidence. |
+
+    **Take-aways.** (i) A third of the "agent better" cases are wording luck rather than better orchestration. (ii) Looping on an identical call is the norm for MedGemma (81% of questions) but does not by itself change the answer. (iii) The clearest *real* harm is an unnecessary extra tool adding irrelevant evidence.
 """)
 
 # --------------------------------------------------------------------------------------------- 11-12
