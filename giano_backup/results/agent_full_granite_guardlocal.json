@@ -1,0 +1,231 @@
+{
+ "overall": {
+  "EM": 0.744,
+  "Contains": 0.786,
+  "ROUGE-1": 0.8307352851826536,
+  "ROUGE-L": 0.8307352851826536,
+  "tool_calls": 2.51,
+  "steps": 3.072,
+  "latency_s": 2.996363139629364,
+  "leak": 0.0,
+  "n": 500
+ },
+ "per_category": {
+  "0": {
+   "EM": 0.8,
+   "Contains": 0.9,
+   "ROUGE-1": 0.8983333333333332,
+   "ROUGE-L": 0.8983333333333332,
+   "tool_calls": 2.9,
+   "steps": 3.3,
+   "latency_s": 3.0089509539306163,
+   "leak": 0.0,
+   "n": 20
+  },
+  "1": {
+   "EM": 0.75,
+   "Contains": 0.75,
+   "ROUGE-1": 0.845,
+   "ROUGE-L": 0.845,
+   "tool_calls": 1.95,
+   "steps": 2.85,
+   "latency_s": 3.0439646593509955,
+   "leak": 0.0,
+   "n": 20
+  },
+  "2": {
+   "EM": 0.7469879518072289,
+   "Contains": 0.8072289156626506,
+   "ROUGE-1": 0.8369477911646588,
+   "ROUGE-L": 0.8369477911646588,
+   "tool_calls": 2.6987951807228914,
+   "steps": 3.2289156626506026,
+   "latency_s": 3.0058885022852855,
+   "leak": 0.0,
+   "n": 83
+  },
+  "3": {
+   "EM": 0.8387096774193549,
+   "Contains": 0.8387096774193549,
+   "ROUGE-1": 0.8796350602802215,
+   "ROUGE-L": 0.8796350602802215,
+   "tool_calls": 2.725806451612903,
+   "steps": 3.193548387096774,
+   "latency_s": 3.0062855048793797,
+   "leak": 0.0,
+   "n": 62
+  },
+  "4": {
+   "EM": 0.6597938144329897,
+   "Contains": 0.711340206185567,
+   "ROUGE-1": 0.7714694812632957,
+   "ROUGE-L": 0.7714694812632957,
+   "tool_calls": 2.814432989690722,
+   "steps": 3.216494845360825,
+   "latency_s": 2.994039531005435,
+   "leak": 0.0,
+   "n": 97
+  },
+  "5": {
+   "EM": 0.7540983606557377,
+   "Contains": 0.819672131147541,
+   "ROUGE-1": 0.851983535590093,
+   "ROUGE-L": 0.851983535590093,
+   "tool_calls": 2.098360655737705,
+   "steps": 2.80327868852459,
+   "latency_s": 2.9336641541720945,
+   "leak": 0.0,
+   "n": 61
+  },
+  "6": {
+   "EM": 0.8,
+   "Contains": 0.8,
+   "ROUGE-1": 0.8415584415584416,
+   "ROUGE-L": 0.8415584415584416,
+   "tool_calls": 2.4909090909090907,
+   "steps": 3.036363636363636,
+   "latency_s": 3.0124393721299993,
+   "leak": 0.0,
+   "n": 55
+  },
+  "7": {
+   "EM": 0.7,
+   "Contains": 0.75,
+   "ROUGE-1": 0.7973684210526316,
+   "ROUGE-L": 0.7973684210526316,
+   "tool_calls": 1.95,
+   "steps": 2.7,
+   "latency_s": 2.9926361142299496,
+   "leak": 0.0,
+   "n": 20
+  },
+  "8": {
+   "EM": 0.6,
+   "Contains": 0.6,
+   "ROUGE-1": 0.6785714285714286,
+   "ROUGE-L": 0.6785714285714286,
+   "tool_calls": 1.85,
+   "steps": 2.75,
+   "latency_s": 2.98411075068781,
+   "leak": 0.0,
+   "n": 20
+  },
+  "9": {
+   "EM": 0.7380952380952381,
+   "Contains": 0.8333333333333334,
+   "ROUGE-1": 0.8941798941798942,
+   "ROUGE-L": 0.8941798941798942,
+   "tool_calls": 2.4285714285714284,
+   "steps": 2.9761904761904763,
+   "latency_s": 2.986446604562494,
+   "leak": 0.0,
+   "n": 42
+  },
+  "10": {
+   "EM": 0.8,
+   "Contains": 0.8,
+   "ROUGE-1": 0.8166666666666667,
+   "ROUGE-L": 0.8166666666666667,
+   "tool_calls": 2.45,
+   "steps": 3.15,
+   "latency_s": 3.0609801243847374,
+   "leak": 0.0,
+   "n": 20
+  }
+ },
+ "retrieval": {
+  "Recall@1": 0.796,
+  "Recall@5": 0.924,
+  "Recall@10": 0.946,
+  "MRR": 0.8516525117956621,
+  "MAP": 0.8516525117956621,
+  "nDCG@1": 0.796,
+  "nDCG@5": 0.8667491407481662,
+  "nDCG@10": 0.8740090192328258
+ },
+ "failure_rates": {
+  "parse_error": 0.0,
+  "unknown_tool": 0.0,
+  "repeat_call": 0.04,
+  "tool_error": 0.0,
+  "forced_final": 0.004,
+  "loop_break": 0.004,
+  "no_tool_answer": 0.0,
+  "guardrail_retrieval": 0.478
+ },
+ "gold_seen": 0.9,
+ "tool_usage_per_question": {
+  "retrieve_from_index": 1.0,
+  "query_reformulator": 0.69,
+  "generate_reasoning_query": 0.628,
+  "fetch_pubmed_live": 0.192
+ },
+ "tool_usage_by_category": {
+  "0": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.75,
+   "generate_reasoning_query": 0.7,
+   "fetch_pubmed_live": 0.45
+  },
+  "1": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.45,
+   "generate_reasoning_query": 0.4,
+   "fetch_pubmed_live": 0.1
+  },
+  "2": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.7590361445783133,
+   "generate_reasoning_query": 0.7228915662650602,
+   "fetch_pubmed_live": 0.21686746987951808
+  },
+  "3": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.8387096774193549,
+   "generate_reasoning_query": 0.7419354838709677,
+   "fetch_pubmed_live": 0.14516129032258066
+  },
+  "4": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.8041237113402062,
+   "generate_reasoning_query": 0.7525773195876289,
+   "fetch_pubmed_live": 0.25773195876288657
+  },
+  "5": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.5081967213114754,
+   "generate_reasoning_query": 0.4262295081967213,
+   "fetch_pubmed_live": 0.16393442622950818
+  },
+  "6": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.6727272727272727,
+   "generate_reasoning_query": 0.6363636363636364,
+   "fetch_pubmed_live": 0.18181818181818182
+  },
+  "7": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.55,
+   "generate_reasoning_query": 0.25,
+   "fetch_pubmed_live": 0.15
+  },
+  "8": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.45,
+   "generate_reasoning_query": 0.35,
+   "fetch_pubmed_live": 0.05
+  },
+  "9": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.6190476190476191,
+   "generate_reasoning_query": 0.6428571428571429,
+   "fetch_pubmed_live": 0.16666666666666666
+  },
+  "10": {
+   "retrieve_from_index": 1.0,
+   "query_reformulator": 0.7,
+   "generate_reasoning_query": 0.65,
+   "fetch_pubmed_live": 0.1
+  }
+ }
+}

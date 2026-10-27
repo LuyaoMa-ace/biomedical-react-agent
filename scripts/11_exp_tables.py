@@ -34,6 +34,9 @@ SYSTEMS = [
     ("Agent: no reasoning query + guardrail", "agent_no_reasoning_guard"),
     ("Agent: no reformulator + guardrail", "agent_no_reformulator_guard"),
     ("Agent: index only + guardrail", "agent_index_only_guard"),
+    ("Agent (Granite): no reformulator + guardrail*", "agent_no_reformulator_granite_guardlocal"),
+    ("Agent (Granite): no reasoning query + guardrail*", "agent_no_reasoning_granite_guardlocal"),
+    ("Agent (Granite): no live PubMed + guardrail*", "agent_no_pubmed_granite_guardlocal"),
 ]
 ANS = ["EM", "Contains", "ROUGE-1", "ROUGE-L"]
 EFF = ["tool_calls", "steps", "latency_s"]
@@ -168,3 +171,23 @@ if rows:
     pairs.to_csv(f"{args.out}/exp_pairs.csv", index=False)
     print("\n== Selected paired comparisons (EM) ==")
     print(pairs.round(3).to_string(index=False))
+
+
+# ---------------- experiment 1b: ablations under the guardrail (each minus the full agent with the same scheduler + guardrail) -------
+ABL = [("agent_no_fda_guard", "agent_full_guard"), ("agent_no_pubmed_guard", "agent_full_guard"),
+       ("agent_no_reasoning_guard", "agent_full_guard"), ("agent_no_reformulator_guard", "agent_full_guard"),
+       ("agent_index_only_guard", "agent_full_guard"),
+       ("agent_no_reformulator_granite_guardlocal", "agent_full_granite_guardlocal"),
+       ("agent_no_reasoning_granite_guardlocal", "agent_full_granite_guardlocal"),
+       ("agent_no_pubmed_granite_guardlocal", "agent_full_granite_guardlocal")]
+rows = []
+for k, ref in ABL:
+    if k in data and ref in data:
+        rows.append({"config": labels[k], "reference": labels[ref], "EM": data[k]["EM"].mean(), "tools": data[k]["tool_calls"].mean(),
+                     "latency_s": data[k]["latency_s"].mean(), **paired(k, ref, "EM")})
+if rows:
+    ab2 = pd.DataFrame(rows)
+    ab2.to_csv(f"{args.out}/exp1b_ablation_guardrail.csv", index=False)
+    print("\n== Experiment 1b: ablations under the guardrail, each minus the full agent with the same scheduler (EM) ==")
+    print(ab2.round(3).to_string(index=False))
+    print("(* Granite rows use the local-index guardrail variant, which was designed post hoc)")

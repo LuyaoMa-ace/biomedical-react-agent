@@ -2,3 +2,15 @@ config,metric,diff,ci_lo,ci_hi,only_sys,only_ref,p_mcnemar,significant
 Agent: index only,EM,0.068,0.038,0.098,46,12,8.219663963332515e-06,True
 Agent: index only,Contains,0.072,0.042,0.102,46,12,8.219663963332515e-06,True
 Agent: index only,ROUGE-1,0.06506334776334777,0.039807940115440116,0.09102548701298702,46,12,8.219663963332515e-06,True
+Agent (Granite scheduler): full,EM,-0.134,-0.176,-0.092,27,94,7.135074175145182e-10,True
+Agent (Granite scheduler): full,Contains,-0.15,-0.194,-0.108,27,94,7.135074175145182e-10,True
+Agent (Granite scheduler): full,ROUGE-1,-0.12635656565656567,-0.16435383477633478,-0.08851500000000002,27,94,7.135074175145182e-10,True
+Agent: full + guardrail,EM,0.058,0.032,0.084,37,8,1.5374090196473844e-05,True
+Agent: full + guardrail,Contains,0.066,0.04,0.094,37,8,1.5374090196473844e-05,True
+Agent: full + guardrail,ROUGE-1,0.06393564213564212,0.041198174603174605,0.08789784992784994,37,8,1.5374090196473844e-05,True
+Agent (Granite): full + guardrail,EM,0.016,-0.018,0.05,43,35,0.4282070357175807,False
+Agent (Granite): full + guardrail,Contains,0.02,-0.014,0.054,43,35,0.4282070357175807,False
+Agent (Granite): full + guardrail,ROUGE-1,0.020364646464646464,-0.009299715007215005,0.050598272005771966,43,35,0.4282070357175807,False
+Agent (Granite): full + guardrail (local-index variant),EM,0.06,0.03,0.092,47,17,0.0002268823828832806,True
+Agent (Granite): full + guardrail (local-index variant),Contains,0.056,0.026,0.086,47,17,0.0002268823828832806,True
+Agent (Granite): full + guardrail (local-index variant),ROUGE-1,0.053811832611832616,0.0283847619047619,0.07999062049062047,47,17,0.0002268823828832806,True

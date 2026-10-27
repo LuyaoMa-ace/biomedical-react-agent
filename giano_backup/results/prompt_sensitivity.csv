@@ -1,0 +1,9 @@
+system,prompt,n,EM,Contains,ROUGE-1,diff_vs_v3,ci_lo,ci_hi
+vanilla_rag,v3 (used in all experiments),500,0.764,0.82,0.8603716488190172,0.0,0.0,0.0
+vanilla_rag,v4 paraphrased instruction,500,0.776,0.83,0.8662256170729855,0.012,-0.006,0.032
+vanilla_rag,v5 no format examples,500,0.704,0.798,0.8219302124775809,-0.06,-0.09,-0.02995000000000027
+vanilla_rag,v6 minimal instruction,500,0.718,0.818,0.8135912907525911,-0.046,-0.076,-0.018
+none,v3 (used in all experiments),500,0.296,0.31,0.41745584415584414,0.0,0.0,0.0
+none,v4 paraphrased instruction,500,0.292,0.308,0.421625974025974,-0.004,-0.022,0.014
+none,v5 no format examples,500,0.206,0.27,0.3839514217808335,-0.09,-0.122,-0.06
+none,v6 minimal instruction,500,0.294,0.328,0.42762459762459765,-0.002,-0.038,0.03

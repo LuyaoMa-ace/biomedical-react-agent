@@ -1,0 +1,46 @@
+agent_full_granite: 500 questions
+
+== mean tool calls per question, by category ==
+         retrieve_from_index  query_reformulator  generate_reasoning_query  fetch_pubmed_live  query_openfda
+cat_num                                                                                                     
+0                       0.55                0.75                      0.70               0.45           0.00
+1                       0.80                0.45                      0.40               0.10           0.00
+2                       0.51                0.75                      0.72               0.27           0.00
+3                       0.44                0.81                      0.76               0.23           0.00
+4                       0.40                0.81                      0.76               0.21           0.00
+5                       0.72                0.52                      0.44               0.18           0.00
+6                       0.62                0.64                      0.62               0.13           0.00
+7                       0.75                0.40                      0.25               0.15           0.05
+8                       0.65                0.45                      0.35               0.15           0.00
+9                       0.62                0.60                      0.57               0.12           0.00
+10                      0.55                0.70                      0.65               0.25           0.00
+overall: {'retrieve_from_index': 0.556, 'query_reformulator': 0.676, 'generate_reasoning_query': 0.626, 'fetch_pubmed_live': 0.202, 'query_openfda': 0.002}
+
+== reasoning steps vs nDCG@10 ==  Spearman rho = -0.316 (p = 4.96e-13)
+         n  ndcg10     EM  gold_seen
+steps                               
+2      160   0.842  0.712      0.862
+3      161   0.143  0.304      0.149
+4      155   0.545  0.665      0.626
+5       22   0.000  0.364      0.091
+6        2   0.500  0.500      0.500
+
+== failure-mode rate per category (share of questions) ==
+           n  looping  format  stopped_early  bad_args  retrieval_miss  reading_error
+cat_num                                                                              
+0         20    0.000   0.000            0.0     0.150           0.400          0.050
+1         20    0.050   0.050            0.0     0.050           0.200          0.300
+2         83    0.024   0.000            0.0     0.072           0.530          0.096
+3         62    0.032   0.000            0.0     0.032           0.500          0.097
+4         97    0.021   0.000            0.0     0.021           0.619          0.113
+5         61    0.049   0.000            0.0     0.033           0.377          0.148
+6         55    0.000   0.000            0.0     0.000           0.418          0.091
+7         20    0.050   0.000            0.0     0.050           0.300          0.150
+8         20    0.100   0.000            0.0     0.000           0.500          0.100
+9         42    0.000   0.000            0.0     0.000           0.452          0.167
+10        20    0.000   0.000            0.0     0.100           0.500          0.150
+all      500    0.026   0.002            0.0     0.038           0.476          0.122
+
+wrote ../results/trace_examples_agent_full_granite.md  (16 better / 123 worse questions)
+
+figures + csv written to ../results
