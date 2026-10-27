@@ -42,6 +42,7 @@ scripts/                      all code (numbered in execution order) and SLURM s
   07_rescore.py 08_stats.py                                         re-scoring, paired statistics
   09_run_agent.py 10_agent_diag.py                                  the agent and its diagnostics
   11_exp_tables.py 12_trace_analysis.py 13_paraphrase_split.py      experiments 1-3 + extra analyses
+  14_prompt_sensitivity.py                                          answer-prompt wording check
   run_*.sbatch                                                      SLURM job scripts (L40 / RTX 2080 Ti)
 data/    sample.jsonl corpus.jsonl corpus_distractors.jsonl distractor_pmids.jsonl
 results/ metrics (json/csv), figures (png), tables (md), analysis logs
@@ -89,6 +90,8 @@ python 11_exp_tables.py            # ladder, experiment 1 (ablations), experimen
 python 12_trace_analysis.py --agent agent_full --static baseline_vanilla_rag_v3     # experiment 3
 python 08_stats.py --systems none vanilla_rag reformulate_rag reasoning_rag fda_rag --ref vanilla_rag
 python 13_paraphrase_split.py
+# prompt sensitivity (3 reworded answer prompts x {Vanilla RAG, Baseline 0})
+sbatch run_prompt_sens.sbatch && python 14_prompt_sensitivity.py
 ```
 
 Every run is **resumable** (finished question ids are skipped) and writes `traces/<name>.jsonl` + `results/<name>.json`.
@@ -104,7 +107,27 @@ Generation is greedy (`do_sample=False`), so reruns are deterministic up to GPU 
 * **Honest caveats**: the answer prompt and the agent prompt were adjusted after reading failures on this same
   500-question set (no separate dev set); the guardrail is a post-hoc fix whose predicted effect was written
   down before running. Absolute numbers may be slightly optimistic; comparisons between systems are fair because
-  all systems share the same answer generator. `TODO: add limitations from the final analysis.`
+  all systems share the same answer generator.
+
+### Limitations
+
+* **Prompts are not optimised and not tuned on held-out data.** Answer and scheduler prompts were iterated by hand
+  (v1→v3, agent v1→v3) while reading failures on the same 500 questions; there is no separate dev set, and no
+  systematic prompt search was run. We only claim that prompts are *shared and fixed* across systems, not optimal.
+  `14_prompt_sensitivity.py` re-runs Vanilla RAG and Baseline 0 with three reworded answer prompts to measure how
+  much the wording matters (`results/prompt_sensitivity.md`): paraphrasing the instruction (v4) changes nothing
+  significant (+0.012 EM), but dropping the format examples costs 4.6–6.0 EM points (Contains moves far less, so the
+  loss is answer form, not knowledge). v3 is therefore on a plateau, not proven optimal; read absolute EM with about
+  ±5 points of prompt uncertainty. Re-running the four fixed chains under v4 keeps the picture: Vanilla 0.776,
+  reformulate 0.778, FDA 0.776, reasoning 0.764 (no chain beats Vanilla; oracle headroom +0.030), but the
+  reasoning-chain penalty seen under v3 (−0.028, p=0.02) is no longer significant (−0.012, p=0.33).
+* **The scheduler prompt was developed with MedGemma.** Granite-4.0-micro received the same text-format ReAct prompt
+  (no native function calling, no prompt of its own), so "Granite < MedGemma" may partly reflect prompt fit.
+* **Zero-shot small schedulers only**; no fine-tuning, no few-shot demonstrations of tool use, no larger LLM.
+* **500 questions**: paired differences below roughly ±2–3 EM points are not detectable.
+* **Closed 5,000-paper corpus** (paper: 16M abstracts), so absolute accuracies are not comparable to the paper.
+* **EM underestimates** correct answers with different wording (Contains / ROUGE are reported alongside).
+* **The guardrail is a post-hoc fix**; its effect was predicted before running, but it was designed after seeing the failures.
 
 ## 7. Notes on the data
 

@@ -28,6 +28,11 @@ SYSTEMS = [
     ("Agent (Granite scheduler): full", "agent_full_granite"),
     ("Agent: full + guardrail", "agent_full_guard"),
     ("Agent (Granite): full + guardrail", "agent_full_granite_guard"),
+    ("Agent: no OpenFDA + guardrail", "agent_no_fda_guard"),
+    ("Agent: no live PubMed + guardrail", "agent_no_pubmed_guard"),
+    ("Agent: no reasoning query + guardrail", "agent_no_reasoning_guard"),
+    ("Agent: no reformulator + guardrail", "agent_no_reformulator_guard"),
+    ("Agent: index only + guardrail", "agent_index_only_guard"),
 ]
 ANS = ["EM", "Contains", "ROUGE-1", "ROUGE-L"]
 EFF = ["tool_calls", "steps", "latency_s"]
@@ -139,3 +144,24 @@ if args.agent in data:
     print(pc.round(3).to_string())
 else:
     print(f"\n[note] {args.agent} not available yet; experiments 1-2 tables skipped")
+
+
+# ---------------- selected paired comparisons (guardrail effect, agents vs the strongest fixed chain) ----------------
+PAIRS = [
+    ("guardrail effect, MedGemma scheduler", "agent_full_guard", "agent_full"),
+    ("guardrail effect, Granite scheduler", "agent_full_granite_guard", "agent_full_granite"),
+    ("MedGemma agent + guardrail vs Vanilla RAG", "agent_full_guard", "baseline_vanilla_rag_v3"),
+    ("MedGemma agent + guardrail vs index-only agent", "agent_full_guard", "agent_index_only"),
+    ("Granite agent + guardrail vs Vanilla RAG", "agent_full_granite_guard", "baseline_vanilla_rag_v3"),
+    ("Granite vs MedGemma scheduler (both + guardrail)", "agent_full_granite_guard", "agent_full_guard"),
+    ("index-only agent vs Vanilla RAG", "agent_index_only", "baseline_vanilla_rag_v3"),
+]
+rows = []
+for label, a, b in PAIRS:
+    if a in data and b in data:
+        rows.append({"comparison": label, "EM_sys": data[a]["EM"].mean(), "EM_ref": data[b]["EM"].mean(), **paired(a, b, "EM")})
+if rows:
+    pairs = pd.DataFrame(rows)
+    pairs.to_csv(f"{args.out}/exp_pairs.csv", index=False)
+    print("\n== Selected paired comparisons (EM) ==")
+    print(pairs.round(3).to_string(index=False))

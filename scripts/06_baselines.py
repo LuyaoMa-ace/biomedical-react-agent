@@ -34,7 +34,7 @@ p.add_argument("--index_tag", default="_5k")
 p.add_argument("--retr_device", default=None, choices=["cpu", "cuda"],
                help="device for the jina query encoder; use cpu on 11GB GPUs")
 p.add_argument("--tag", default="")
-p.add_argument("--prompt", default="v3", choices=["v1", "v2", "v3"])
+p.add_argument("--prompt", default="v3", choices=["v1", "v2", "v3", "v4", "v5", "v6"])
 args = p.parse_args()
 
 sample, _ = load_data()
@@ -66,6 +66,14 @@ PROMPTS = {
 }
 # v3: v2 wording + the model turn is pre-filled with "A:" (stops the "thought ..." reasoning leak)
 PROMPTS["v3"] = {**PROMPTS["v2"], "prefill": "A:"}
+# prompt-sensitivity variants (same prefill as v3; only the wording changes) -> 14_prompt_sensitivity.py
+PROMPTS["v4"] = {**PROMPTS["v3"],  # paraphrase of the v3 instruction, same examples
+    "head": ("You answer biomedical questions. Give just the answer as a brief noun phrase of no more than six words, "
+             "without any explanation or complete sentence. If PubMed abstracts are given, reuse the wording they use, "
+             "modifiers included.\n\n")}
+PROMPTS["v5"] = {**PROMPTS["v3"], "example": ""}  # same instruction, no format examples
+PROMPTS["v6"] = {**PROMPTS["v3"],  # minimal one-line instruction, no examples
+    "head": "Answer with a short phrase only.\n\n", "example": ""}
 HEAD, EXAMPLE = PROMPTS[args.prompt]["head"], PROMPTS[args.prompt]["example"]
 PREFILL = PROMPTS[args.prompt].get("prefill")
 

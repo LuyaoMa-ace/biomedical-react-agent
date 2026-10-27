@@ -482,6 +482,43 @@ md("""
     **Reading the table.** Paraphrased questions are harder for Vanilla RAG (about −10 EM points, significant), yet Recall@1 is the same for both groups:
     the semantic retriever is not fooled by the changed wording; the loss comes from reading and matching the answer.
 """)
+md("""
+    ## 12b. How much does the answer-prompt wording matter?
+
+    We never searched for an optimal prompt, so we check sensitivity: Vanilla RAG and Baseline 0 are re-run with three reworded answer prompts
+    (v4 paraphrased instruction, v5 no format examples, v6 one-line instruction). Same model, same 500 questions, same retrieval; only the text changes.
+""")
+code("""
+    if have("results/prompt_sensitivity.csv"):
+        display(pd.read_csv(ROOT / "results" / "prompt_sensitivity.csv").round(3))
+    else:
+        print("run scripts/14_prompt_sensitivity.py first")
+""")
+md("""
+    **Reading the table.** Wording matters, more than we hoped. Vanilla RAG moves between 0.704 and 0.776 EM (spread 0.072), the same size as the gaps between agent and fixed chains.
+    - A paraphrased instruction with the same examples (v4) is statistically the same as v3 (+0.012, CI [-0.006, 0.032]).
+    - Removing the format examples (v5, v6) costs 4.6-6.0 EM points (significant), but *Contains* barely moves (0.820 -> 0.798 / 0.818): the loss is answer *form* (length, modifiers), not knowledge.
+    - So v3 is on the plateau of "clear instruction + format examples", but we cannot claim it is optimal, and absolute EM should be read with about ±5 points of prompt uncertainty.
+    - All systems share the same prompt, so rankings are comparable; section 12c re-checks the fixed-chain ranking under v4.
+""")
+md("""
+    ## 12c. Does the ranking of the fixed chains survive a different prompt?
+
+    The four fixed chains and Baseline 0 are re-run with the paraphrased answer prompt v4 (same model, same 500 questions).
+""")
+code("""
+    import json as _json
+    if have("results/stats_baselines_v4.json"):
+        _s = _json.load(open(ROOT / "results" / "stats_baselines_v4.json"))
+        _t = pd.DataFrame({k: {"EM": v["EM"]["mean"], "diff_vs_vanilla": _s["vs_ref"].get(k, {}).get("diff", 0.0),
+                               "p_mcnemar": _s["vs_ref"].get(k, {}).get("p_mcnemar", float("nan"))} for k, v in _s["systems"].items()}).T
+        display(_t.round(3)); print("oracle EM", round(_s["oracle"]["oracle_EM"], 3), "headroom", round(_s["oracle"]["headroom"], 3))
+""")
+md("""
+    **Reading the table.** Under v4 Vanilla RAG, reformulate→retrieve and FDA-augmented RAG are indistinguishable (0.776, 0.778, 0.776) and no chain beats Vanilla RAG, as under v3; the oracle headroom is again about +3 points (0.030 vs 0.032).
+    One detail does change: the reasoning→retrieve penalty (v3: -0.028, p = 0.02) shrinks to -0.012 and is not significant (p = 0.33), so we only claim that the reasoning chain is *not better* than Vanilla RAG, not that it is worse.
+    The conclusions "retrieval is what matters" and "no fixed chain clearly beats plain retrieval" do not depend on the prompt wording.
+""")
 
 # --------------------------------------------------------------------------------------------- 13-14
 md("""
@@ -494,8 +531,9 @@ md("""
     - Our retrieval baseline is strong (Recall@10 0.97) and the oracle ceiling is only +3 points: little room for any orchestrator.
 
     **Limitations.** 500 questions (a paired difference needs about ±2 points to be detectable); a closed 5,000-paper corpus (the dataset paper searches 16M abstracts, so absolute numbers are not comparable);
-    the answer prompt and the agent prompt were adjusted after reading failures on the same questions (no separate dev set); EM underestimates correct answers with different wording.
-    No fine-tuning was done.
+    the answer prompt and the agent prompt were adjusted by hand after reading failures on the same questions (no separate dev set, no systematic prompt search, so they are shared and fixed, not optimal; see the sensitivity check in section 12b);
+    the scheduler prompt was developed with MedGemma and reused unchanged for Granite, so part of the Granite gap may be prompt fit; only zero-shot small schedulers were tested (no few-shot tool demos, no fine-tuning, no larger LLM);
+    the guardrail is a post-hoc fix (its effect was predicted before the run); EM underestimates correct answers with different wording.
 
     **Related work.** `TODO: 6-8 lines from LITERATURE_REVIEW.md` — PaperSearchQA (Burgess et al.), ReAct, Self-RAG, Adaptive-RAG, Search-R1,
     *Small LLMs are weak tool learners* (α-UMi), Weller et al. on query expansion with strong retrievers, BFCL.
