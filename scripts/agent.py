@@ -119,18 +119,22 @@ def initial_state(question: str) -> State:
 
 class ReActAgent:
     def __init__(self, llm, tools: Dict[str, Callable[[str], Any]], max_steps: int = 6,
-                 max_new_tokens: int = 160, loop_break: int = 2, answer_llm=None, guardrail: bool = False):
+                 max_new_tokens: int = 160, loop_break: int = 2, answer_llm=None, guardrail: bool = False,
+                 guardrail_local: bool = False):
         """llm.generate(prompt, max_new_tokens=, prefill=, stop=) -> str   (one prompt)
         tools[name](input) -> (observation_text, meta_dict)
         loop_break: after this many consecutive unproductive steps, stop and answer.
         llm = the scheduler (decides tools / when to stop); answer_llm = the answer generator
         (defaults to llm; set it to MedGemma when the scheduler is another model).
         guardrail: if the agent stops with NO document evidence, run one retrieve_from_index call
-        (latest reformulated query, else the question) before answering. Tool semantics are unchanged."""
+        (latest reformulated query, else the question) before answering. Tool semantics are unchanged.
+        guardrail_local (variant, implies guardrail): also fire when evidence exists but none of it came from the
+        local index (e.g. only PubMed papers), i.e. whenever retrieve_from_index was never executed."""
         self.llm, self.tools, self.max_steps, self.max_new = llm, tools, max_steps, max_new_tokens
         self.loop_break = loop_break
         self.answer_llm = answer_llm or llm
-        self.guardrail = guardrail
+        self.guardrail_local = guardrail_local
+        self.guardrail = guardrail or guardrail_local
         self.header = build_header(list(tools))
         g = StateGraph(State)
         g.add_node("agent", self.agent_node)
@@ -211,7 +215,8 @@ class ReActAgent:
     def answer_node(self, s: State) -> State:
         """Final answer from the collected evidence, with the shared answer prompt."""
         evidence, steps, flags = list(s["evidence"]), list(s["steps"]), dict(s["flags"])
-        if self.guardrail and not evidence and "retrieve_from_index" in self.tools:
+        no_local = not any(st.get("tool") == "retrieve_from_index" and st.get("executed") for st in steps)
+        if self.guardrail and (not evidence or (self.guardrail_local and no_local)) and "retrieve_from_index" in self.tools:
             query = s["question"]
             for st in reversed(steps):                  # most recent reformulated query, if any
                 obs = str(st.get("observation", ""))

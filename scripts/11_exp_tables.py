@@ -28,6 +28,7 @@ SYSTEMS = [
     ("Agent (Granite scheduler): full", "agent_full_granite"),
     ("Agent: full + guardrail", "agent_full_guard"),
     ("Agent (Granite): full + guardrail", "agent_full_granite_guard"),
+    ("Agent (Granite): full + guardrail (local-index variant)", "agent_full_granite_guardlocal"),
     ("Agent: no OpenFDA + guardrail", "agent_no_fda_guard"),
     ("Agent: no live PubMed + guardrail", "agent_no_pubmed_guard"),
     ("Agent: no reasoning query + guardrail", "agent_no_reasoning_guard"),
@@ -150,6 +151,8 @@ else:
 PAIRS = [
     ("guardrail effect, MedGemma scheduler", "agent_full_guard", "agent_full"),
     ("guardrail effect, Granite scheduler", "agent_full_granite_guard", "agent_full_granite"),
+    ("Granite: local-index guardrail variant vs original guardrail", "agent_full_granite_guardlocal", "agent_full_granite_guard"),
+    ("Granite: local-index guardrail variant vs Vanilla RAG", "agent_full_granite_guardlocal", "baseline_vanilla_rag_v3"),
     ("MedGemma agent + guardrail vs Vanilla RAG", "agent_full_guard", "baseline_vanilla_rag_v3"),
     ("MedGemma agent + guardrail vs index-only agent", "agent_full_guard", "agent_index_only"),
     ("Granite agent + guardrail vs Vanilla RAG", "agent_full_granite_guard", "baseline_vanilla_rag_v3"),

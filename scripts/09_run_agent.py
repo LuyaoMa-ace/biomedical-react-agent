@@ -39,13 +39,17 @@ p.add_argument("--index_tag", default="_5k")
 p.add_argument("--retr_device", default=None, choices=["cpu", "cuda"])
 p.add_argument("--guardrail", action="store_true",
                help="auto-retrieve once if the agent stops without any document evidence")
+p.add_argument("--guardrail_local", action="store_true",
+               help="variant: also retrieve when the evidence contains no local-index result (e.g. PubMed only)")
 p.add_argument("--tag", default="")
 args = p.parse_args()
+if args.guardrail_local:
+    args.guardrail = True
 
 sample, _ = load_data()
 if args.n:
     sample = sample.head(args.n)
-name = f"agent_{args.config}{'' if args.orchestrator == 'medgemma' else '_granite'}{'_guard' if args.guardrail else ''}{args.tag}"
+name = f"agent_{args.config}{'' if args.orchestrator == 'medgemma' else '_granite'}{'_guardlocal' if args.guardrail_local else '_guard' if args.guardrail else ''}{args.tag}"
 os.makedirs("../traces", exist_ok=True); os.makedirs("../results", exist_ok=True)
 trace_path = f"../traces/{name}.jsonl"
 done = set()
@@ -97,7 +101,7 @@ if len(todo):
             "generate_reasoning_query": t_reasoning, "fetch_pubmed_live": t_pubmed,
             "query_openfda": t_fda}
     agent = ReActAgent(sched, {t: impl[t] for t in enabled}, max_steps=args.max_steps, answer_llm=llm,
-                       guardrail=args.guardrail)
+                       guardrail=args.guardrail, guardrail_local=args.guardrail_local)
 
     with open(trace_path, "a") as f:
         for i in range(0, len(todo), args.chunk):
