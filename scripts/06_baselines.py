@@ -33,11 +33,13 @@ p.add_argument("--dtype", default="bfloat16")
 p.add_argument("--index_tag", default="_5k")
 p.add_argument("--retr_device", default=None, choices=["cpu", "cuda"],
                help="device for the jina query encoder; use cpu on 11GB GPUs")
+p.add_argument("--sample", default="../data/sample.jsonl", help="question file (held-out run: ../data/holdout.jsonl with --tag _holdout)")
 p.add_argument("--tag", default="")
 p.add_argument("--prompt", default="v3", choices=["v1", "v2", "v3", "v4", "v5", "v6"])
 args = p.parse_args()
 
-sample, _ = load_data()
+assert args.sample == "../data/sample.jsonl" or args.tag, "use --tag when running another question file (traces would collide)"
+sample, _ = load_data(args.sample)
 if args.n:
     sample = sample.head(args.n)
 name = f"baseline_{args.mode}{'' if args.prompt == 'v1' else '_' + args.prompt}{args.tag}"

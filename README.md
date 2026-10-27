@@ -64,6 +64,7 @@ scripts/                      all code (numbered in execution order) and SLURM s
   09_run_agent.py 10_agent_diag.py                                  the agent and its diagnostics
   11_exp_tables.py 12_trace_analysis.py 13_paraphrase_split.py      experiments 1-3 + extra analyses
   14_prompt_sensitivity.py                                          answer-prompt wording check
+  15_sample_holdout.py run_holdout.sh                               held-out validation set (500 new questions)
   run_*.sbatch                                                      SLURM job scripts (L40 / RTX 2080 Ti)
 data/    sample.jsonl corpus.jsonl corpus_distractors.jsonl distractor_pmids.jsonl
 results/ metrics (json/csv), figures (png), tables (md), analysis logs
@@ -111,6 +112,10 @@ python 11_exp_tables.py            # ladder, experiment 1 (ablations), experimen
 python 12_trace_analysis.py --agent agent_full --static baseline_vanilla_rag_v3     # experiment 3
 python 08_stats.py --systems none vanilla_rag reformulate_rag reasoning_rag fda_rag --ref vanilla_rag
 python 13_paraphrase_split.py
+# held-out validation: 500 NEW questions (their abstracts are already in the 5k index), all systems frozen
+python 15_sample_holdout.py && bash run_holdout.sh
+python 11_exp_tables.py --tag _holdout --out ../results/holdout
+python 08_stats.py --systems none vanilla_rag reformulate_rag reasoning_rag fda_rag --ref vanilla_rag --suffix _v3_holdout --out stats_baselines_holdout
 # prompt sensitivity (3 reworded answer prompts x {Vanilla RAG, Baseline 0})
 sbatch run_prompt_sens.sbatch && python 14_prompt_sensitivity.py
 ```

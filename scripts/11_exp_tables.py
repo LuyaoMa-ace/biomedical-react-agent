@@ -42,6 +42,7 @@ ANS = ["EM", "Contains", "ROUGE-1", "ROUGE-L"]
 EFF = ["tool_calls", "steps", "latency_s"]
 
 p = argparse.ArgumentParser()
+p.add_argument("--tag", default="", help="suffix of the trace files, e.g. _holdout (use with --out ../results/holdout)")
 p.add_argument("--agent", default="agent_full", help="the dynamic system compared in experiment 2")
 p.add_argument("--best_static", default="baseline_vanilla_rag_v3")
 p.add_argument("--traces", default="../traces")
@@ -52,7 +53,7 @@ rng = np.random.default_rng(0)
 
 data, labels = {}, {}
 for label, key in SYSTEMS:
-    path = f"{args.traces}/{key}.jsonl"
+    path = f"{args.traces}/{key}{args.tag}.jsonl"
     if os.path.exists(path):
         d = pd.DataFrame([json.loads(l) for l in open(path)]).drop_duplicates("qid").set_index("qid").sort_index()
         data[key], labels[key] = d, label

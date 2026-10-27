@@ -41,12 +41,14 @@ p.add_argument("--guardrail", action="store_true",
                help="auto-retrieve once if the agent stops without any document evidence")
 p.add_argument("--guardrail_local", action="store_true",
                help="variant: also retrieve when the evidence contains no local-index result (e.g. PubMed only)")
+p.add_argument("--sample", default="../data/sample.jsonl", help="question file (held-out run: ../data/holdout.jsonl with --tag _holdout)")
 p.add_argument("--tag", default="")
 args = p.parse_args()
 if args.guardrail_local:
     args.guardrail = True
 
-sample, _ = load_data()
+assert args.sample == "../data/sample.jsonl" or args.tag, "use --tag when running another question file (traces would collide)"
+sample, _ = load_data(args.sample)
 if args.n:
     sample = sample.head(args.n)
 name = f"agent_{args.config}{'' if args.orchestrator == 'medgemma' else '_granite'}{'_guardlocal' if args.guardrail_local else '_guard' if args.guardrail else ''}{args.tag}"
