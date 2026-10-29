@@ -364,7 +364,7 @@ code("""
         display(ab[ab.metric == "EM"].round(3))
 """)
 md("""
-    **Reading the table.** Without a guardrail, removing tools *helps*: the index-only agent is 6.8 EM points better than the full agent (CI [+3.8, +9.8]), because the rewriting tools lead to answers without evidence (see section 8b).
+    **Reading the table.** Without a guardrail, removing tools *helps*: the index-only agent is 6.8 EM points better than the full agent (CI [+3.8, +9.8]), because the rewriting tools lead to answers without evidence (diagnosed in section 10).
     The question that matters is therefore asked on the **guardrail configuration**, where the "no evidence" failure is repaired:
 """)
 code("""
