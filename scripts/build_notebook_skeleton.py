@@ -559,6 +559,31 @@ md("""
     One detail does change: the reasoning→retrieve penalty (v3: -0.028, p = 0.02) shrinks to -0.012 and is not significant (p = 0.33), so we only claim that the reasoning chain is *not better* than Vanilla RAG, not that it is worse.
     The conclusions "retrieval is what matters" and "no fixed chain clearly beats plain retrieval" do not depend on the prompt wording.
 """)
+md("""
+    ## 12d. Held-out validation: 500 new questions
+
+    Prompts, the agent loop and the guardrail were developed while looking at the first 500 questions. To check that the conclusions are not an artefact of that, every system was **frozen** and run on
+    **500 new questions** (`data/holdout.jsonl`): questions whose gold abstracts were already in the 5,000-paper index as distractors, same category counts as the development sample except
+    category 7 (only 10 available; 10 extra questions in category 4). The predictions below were written *before* the runs.
+
+    | | Prediction (written before the run) |
+    |---|---|
+    | P1 | Baseline 0 EM in [0.22, 0.36]; Vanilla RAG EM in [0.70, 0.82] |
+    | P2 | Vanilla, reformulate and FDA chains within ±0.03 of each other; no fixed chain significantly beats Vanilla |
+    | P3 | The unmodified MedGemma full agent is at least 0.04 below Vanilla (significant) |
+    | P4 | The guardrail lifts the MedGemma full agent by at least +0.03 (significant); MedGemma + guardrail is not significantly above Vanilla |
+    | P5 | Granite full < MedGemma full; Granite + local-index guardrail within 0.04 of MedGemma + guardrail; no Granite variant significantly above Vanilla |
+    | P6 | The index-only agent is not significantly different from Vanilla |
+""")
+code("""
+    if have("results/holdout/exp_ladder.csv"):
+        display(pd.read_csv(ROOT / "results" / "holdout" / "exp_ladder.csv")[["system", "EM", "Contains", "tool_calls", "steps", "latency_s", "R@1", "R@10"]].round(3))
+    else:
+        print("run the held-out experiments first (README section 5)")
+""")
+md("""
+    **Reading the table.** `TODO after the run:` go through P1-P6 one by one (confirmed / not confirmed, with the numbers) and say what changes in the conclusions, if anything.
+""")
 
 # --------------------------------------------------------------------------------------------- 13-14
 md("""
