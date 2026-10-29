@@ -47,8 +47,9 @@ PaperSearchQA, a biomedical factoid QA benchmark built on PubMed abstracts.
 1. *Retrieval is what matters*: EM 0.30 → 0.76 (paired +0.47, CI excludes 0). Reformulation, reasoning queries and FDA labels do not improve on plain retrieval (best oracle routing over the four chains: 0.798, +3.2 points).
 2. *Dynamic orchestration does not beat fixed pipelines.* The unmodified full agent is significantly worse than every chain (−0.05 to −0.08). Cause (trace analysis): the rewriting tools return a *query*, not documents; small schedulers treat the call as "searched" and stop with no evidence (MedGemma: 62 questions, EM 0.31; Granite: 133 questions, EM 0.23).
 3. *A guardrail that retrieves once when no document evidence exists* (tool semantics unchanged; effect predicted before the run) lifts MedGemma by +0.058 [0.032, 0.084] to 0.742 and Granite to 0.700 (0.744 with the post-hoc local-index variant). Both then sit about 2 points below Vanilla RAG, not significantly (p = 0.10 and 0.16), at 15–18× the latency.
-4. *Trace analysis*: the number of reasoning steps is unrelated to retrieval quality (Spearman −0.03, n.s.); most remaining errors are reading errors (~20%), not scheduling errors.
-5. *Robustness*: answer-prompt wording moves EM by up to 7 points (see Methodological notes), but the ranking of the fixed chains and the "no chain beats Vanilla" conclusion hold under a second prompt.
+4. *Ablations under the guardrail* (each tool removed in turn): no single tool changes EM by more than 0.014 (all CIs include 0); OpenFDA is never called. Removing the reasoning tool or the reformulator from Granite keeps EM (0.746 / 0.752 vs 0.744) at 40–45% lower latency.
+5. *Trace analysis*: the number of reasoning steps is unrelated to retrieval quality (Spearman −0.03, n.s.); most remaining errors are reading errors (~20%), not scheduling errors.
+6. *Robustness*: answer-prompt wording moves EM by up to 7 points (see Methodological notes), but the ranking of the fixed chains and the "no chain beats Vanilla" conclusion hold under a second prompt.
 
 ## 3. Repository layout
 

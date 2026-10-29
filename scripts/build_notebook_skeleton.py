@@ -364,8 +364,21 @@ code("""
         display(ab[ab.metric == "EM"].round(3))
 """)
 md("""
-    **Reading the table.** <!-- TODO: refresh with the final runs. Current finding: the index-only agent is 6.8 EM points *better* than the full agent (CI [+3.8, +9.8]). The extra tools hurt. -->
+    **Reading the table.** Without a guardrail, removing tools *helps*: the index-only agent is 6.8 EM points better than the full agent (CI [+3.8, +9.8]), because the rewriting tools lead to answers without evidence (see section 8b).
+    The question that matters is therefore asked on the **guardrail configuration**, where the "no evidence" failure is repaired:
 """)
+code("""
+    if have("results/exp1b_ablation_guardrail.csv"):
+        display(pd.read_csv(ROOT / "results" / "exp1b_ablation_guardrail.csv").round(3))
+""")
+md("""
+    **Reading the table (guardrail configuration).**
+    - *No single tool matters for accuracy.* Removing OpenFDA, PubMed, the reasoning tool or the reformulator changes MedGemma's EM by -0.006 to +0.014; for Granite by 0.000 to +0.008. All 95 % CIs include 0 (about ±0.025, the resolution of 500 questions).
+    - OpenFDA is never used by either scheduler (0.00 calls per question), so removing it is a no-op by construction.
+    - *Tools cost time, not accuracy.* Granite without the reasoning tool is as accurate (0.746 vs 0.744) at 1.67 s per question instead of 3.0 s; without the reformulator 0.752 at 1.74 s.
+    - So the extra tools give no measurable benefit with a strong retriever (Recall@10 0.97), in line with findings that query expansion does not help strong retrievers (Weller et al.). An ablation can only say "no detectable effect", not "zero effect".
+""")
+
 md("""
     # ⚖️ 9. Experiment 2: Fixed Chain vs Dynamic Orchestrator
 
