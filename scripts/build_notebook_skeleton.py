@@ -276,7 +276,8 @@ md("""
 """)
 code("""
     try:
-        import tempfile
+        import tempfile, logging
+        logging.getLogger("metapub").setLevel(logging.ERROR)      # silence the "NCBI_API_KEY was not set" warning
         from tools import OpenFDA, PubMedLive
         fda = OpenFDA(cache_path=tempfile.mkdtemp() + "/fda.jsonl")
         label = fda("alteplase")
@@ -286,7 +287,7 @@ code("""
         q_kw = "sonography prenatal diagnosis unilateral hydrocephalus"
         print("full question ->", [d["pmid"] for d in pm(q_full)], "| keywords ->", [d["pmid"] for d in pm(q_kw)])
     except Exception as e:
-        print("(tool demo skipped:", repr(e)[:100], ")")
+        print("(tool demo skipped: it needs internet access and the packages in env/requirements.txt;", repr(e)[:80], ")")
 """)
 md("""
     ### 🧩 The two query-rewriting tools

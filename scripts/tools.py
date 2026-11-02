@@ -4,9 +4,6 @@ Other tools (query_reformulator, generate_reasoning_query, fetch_pubmed_live,
 query_openfda) will be added to this module.
 """
 import json
-import faiss
-import torch
-from sentence_transformers import SentenceTransformer
 
 
 class LocalRetriever:
@@ -16,6 +13,8 @@ class LocalRetriever:
         """device: "cuda" / "cpu" / None (auto). Use "cpu" on 11GB GPUs so MedGemma has the whole card.
         exclude: PMIDs treated as absent from the index (coverage experiment); results skip them."""
         self.exclude = {str(p) for p in (exclude or ())}
+        import faiss, torch                      # imported here so the other tools (PubMed, OpenFDA, rewriters) work without them
+        from sentence_transformers import SentenceTransformer
         self.docs = [json.loads(l) for l in open(f"{index_dir}/corpus{tag}.jsonl")]
         self.index = faiss.read_index(f"{index_dir}/{key}{tag}.faiss")
         assert self.index.ntotal == len(self.docs), "index and corpus are out of sync"

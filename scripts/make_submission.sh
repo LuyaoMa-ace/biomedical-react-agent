@@ -12,7 +12,7 @@ rm -rf "$S" "$OUT/bigdata_project.zip"; mkdir -p "$S"/{scripts,data,results,trac
 
 cp "$P"/README.md "$S"/ 2>/dev/null || echo "WARNING: README.md missing in $P"
 [ -d "$P/notebook" ] && cp -r "$P/notebook" "$S"/notebook || echo "note: no notebook/ yet"
-cp "$P"/scripts/*.py "$P"/scripts/*.sbatch "$S"/scripts/ 2>/dev/null || true
+cp "$P"/scripts/*.py "$P"/scripts/*.sbatch "$P"/scripts/*.sh "$S"/scripts/ 2>/dev/null || true
 cp "$P"/data/*.jsonl "$S"/data/
 # results: tables, figures, analysis logs; skip smoke tests
 find "$P/results" -maxdepth 1 -type f ! -name '*smoke*' -exec cp {} "$S"/results/ \;
