@@ -1,0 +1,16 @@
+comparison,withheld_%,EM_a,EM_b,diff,ci_lo,ci_hi,only_a,only_b,p_mcnemar,significant
+PubMed tool effect (agent),0,0.722,0.73,-0.008,-0.028,0.012,11,15,0.5572,False
+PubMed tool effect (agent),50,0.49,0.494,-0.004,-0.028,0.02,17,19,0.8679,False
+PubMed tool effect (agent),100,0.24,0.24,0.0,-0.024,0.022,17,17,1.0,False
+agent vs Vanilla RAG,0,0.722,0.746,-0.024,-0.048,0.0,13,25,0.073,False
+agent vs Vanilla RAG,50,0.49,0.488,0.002,-0.022,0.028,21,20,1.0,False
+agent vs Vanilla RAG,100,0.24,0.22,0.02,-0.006,0.046,28,18,0.1839,False
+agent vs always-PubMed hybrid chain,0,0.722,0.73,-0.008,-0.038,0.02,27,31,0.694,False
+agent vs always-PubMed hybrid chain,50,0.49,0.528,-0.038,-0.07,-0.004,23,42,0.0248,True
+agent vs always-PubMed hybrid chain,100,0.24,0.338,-0.098,-0.132,-0.062,17,66,0.0,True
+hybrid chain vs Vanilla RAG,0,0.73,0.746,-0.016,-0.044,0.012,21,29,0.3222,False
+hybrid chain vs Vanilla RAG,50,0.528,0.488,0.04,0.01,0.072,43,23,0.0187,True
+hybrid chain vs Vanilla RAG,100,0.338,0.22,0.118,0.082,0.154,75,16,0.0,True
+PubMed-only chain vs no tools,0,0.336,0.248,0.088,0.052,0.124,63,19,0.0,True
+PubMed-only chain vs no tools,50,0.336,0.248,0.088,0.052,0.124,63,19,0.0,True
+PubMed-only chain vs no tools,100,0.336,0.248,0.088,0.056,0.12,63,19,0.0,True

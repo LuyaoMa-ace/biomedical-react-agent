@@ -1,0 +1,22 @@
+system,withheld_%,EM,EM_withheld_qs,EM_retained_qs,tool_calls,latency_s,gold_seen_withheld_qs,gold_seen_retained_qs
+Baseline 0 (no tools),0,0.248,,0.248,0.0,0.122,,
+Baseline 0 (no tools),50,0.248,0.224,0.272,0.0,0.122,,
+Baseline 0 (no tools),100,0.248,0.248,,0.0,0.122,,
+Vanilla RAG,0,0.746,,0.746,1.0,0.177,,
+Vanilla RAG,50,0.488,0.216,0.76,1.0,0.196,,
+Vanilla RAG,100,0.22,0.22,,1.0,0.189,,
+Reformulate -> retrieve,0,0.746,,0.746,2.0,0.279,,
+Reformulate -> retrieve,50,0.484,0.22,0.748,2.0,0.309,,
+Reformulate -> retrieve,100,0.222,0.222,,2.0,0.309,,
+Reformulate -> PubMed (chain),0,0.336,,0.336,2.0,0.952,,0.09
+Reformulate -> PubMed (chain),50,0.336,0.324,0.348,2.0,0.319,0.084,0.096
+Reformulate -> PubMed (chain),100,0.336,0.336,,2.0,0.329,0.09,
+Retrieve + PubMed (chain),0,0.73,,0.73,3.0,0.417,,0.922
+Retrieve + PubMed (chain),50,0.528,0.32,0.736,3.0,0.427,0.084,0.932
+Retrieve + PubMed (chain),100,0.338,0.338,,3.0,0.442,0.09,
+Agent: full + guardrail,0,0.722,,0.722,1.49,3.427,,0.914
+Agent: full + guardrail,50,0.49,0.26,0.72,1.528,3.815,0.04,0.92
+Agent: full + guardrail,100,0.24,0.24,,1.52,3.854,0.018,
+Agent: no PubMed + guardrail,0,0.73,,0.73,1.284,3.382,,0.918
+Agent: no PubMed + guardrail,50,0.494,0.232,0.756,1.264,3.417,0.0,0.928
+Agent: no PubMed + guardrail,100,0.24,0.24,,1.286,3.503,0.0,

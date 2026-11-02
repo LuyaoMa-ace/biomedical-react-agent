@@ -1,0 +1,4 @@
+withheld_%,pubmed_used_overall,pubmed_used_withheld_qs,pubmed_used_retained_qs,index_used_overall,gold_seen_withheld_qs,gold_seen_retained_qs
+0,0.04,,0.04,1.0,,0.914
+50,0.072,0.108,0.036,1.0,0.04,0.92
+100,0.07,0.07,,1.0,0.018,
