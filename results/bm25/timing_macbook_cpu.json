@@ -1,0 +1,11 @@
+{
+ "machine": "macbook_cpu",
+ "documents": 5000,
+ "build_seconds": 1.1712560653686523,
+ "index_mb": 5.698732,
+ "peak_python_mb_while_building": 42.201966,
+ "latency_ms_per_query": {
+  "development": 0.2029881477355957,
+  "held-out": 0.195953369140625
+ }
+}

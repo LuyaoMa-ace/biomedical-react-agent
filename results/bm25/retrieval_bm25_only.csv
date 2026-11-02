@@ -1,0 +1,7 @@
+sample,subset,method,n,Recall@1,Recall@5,Recall@10,MRR,nDCG@10
+development,all,BM25,500,0.774,0.884,0.922,0.8273,0.8484
+development,original,BM25,229,0.8734,0.9476,0.9563,0.9058,0.9176
+development,paraphrased,BM25,271,0.69,0.8303,0.893,0.7608,0.7899
+held-out,all,BM25,500,0.802,0.902,0.92,0.8437,0.8603
+held-out,original,BM25,266,0.8647,0.9398,0.9549,0.898,0.9105
+held-out,paraphrased,BM25,234,0.7308,0.859,0.8803,0.7819,0.8033
