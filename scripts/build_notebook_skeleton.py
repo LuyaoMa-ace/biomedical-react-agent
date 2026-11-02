@@ -49,7 +49,7 @@ md("""
     9. Experiment 2: fixed chain vs dynamic orchestrator
     10. Experiment 3: what does the agent actually do? (trace analysis)
     11. Granite vs MedGemma as the scheduler
-    12. An extra look: paraphrased questions (12b prompt sensitivity, 12c fixed-chain ranking, 12d held-out validation)
+    12. An extra look: paraphrased questions (12b prompt sensitivity, 12c fixed-chain ranking, 12d held-out validation, 12e coverage experiment)
     13. Discussion, limitations and related work
     14. Reproducibility
 """)
@@ -637,6 +637,33 @@ md("""
     - Caveat: the held-out set has 10 category-7 questions (not 20) and 10 extra in category 4; category-level rows are noise at these sizes.
 """)
 
+md("""
+    ## 12e. Coverage experiment: what if the local index does not contain the answer?
+
+    On our sample the local index almost always contains the gold paper (Recall@10 0.97), which leaves a dynamic agent little to decide. Here we remove that comfort.
+    On the 500 held-out questions the gold paper of a fixed random **0 %, 50 % or 100 %** of the questions is withheld from the index (the sets are nested; implemented as a filter at search time).
+    For a withheld question only live PubMed (`fetch_pubmed_live`) can still find the paper. To keep the comparison fair, the fixed side gets the same tools:
+    *reformulate → PubMed* and *retrieve + PubMed* (both always call PubMed). The agent is compared with itself **without** PubMed. All systems are frozen; the predictions were written before the runs.
+
+    | | Prediction (written before the run) |
+    |---|---|
+    | C1 | Vanilla RAG EM falls to 0.44-0.58 with 50 % withheld and to 0.20-0.34 with 100 % withheld (Baseline 0 is 0.248) |
+    | C2 | Live PubMed recovers the gold paper only for a minority (10-40 % of withheld questions, retrieve + PubMed chain); that chain beats Vanilla RAG by 0.04-0.20 at 100 % |
+    | C3 | The agent does **not** notice that the index is incomplete: its share of questions with a PubMed call differs by less than 0.10 between withheld and retained questions (50 % level) and stays below 0.30 at 100 % |
+    | C4 | Hence PubMed adds little inside the agent: full + guardrail minus no-PubMed + guardrail is not significant at 50 % and at most +0.05 at 100 % |
+    | C5 | The always-PubMed hybrid chain is at least as good as the agent at 100 % withheld; at 0 % it is within -0.05..0 of Vanilla RAG (extra documents distract) |
+""")
+code("""
+    if have("results/coverage/coverage_em.csv"):
+        display(pd.read_csv(ROOT / "results" / "coverage" / "coverage_em.csv"))
+        display(pd.read_csv(ROOT / "results" / "coverage" / "coverage_switching.csv"))
+        display(pd.read_csv(ROOT / "results" / "coverage" / "coverage_pairs.csv"))
+    if have("results/coverage/fig_coverage.png"):
+        display(Image(str(ROOT / "results" / "coverage" / "fig_coverage.png"), width=620))
+""")
+md("""
+    **Reading the tables.** `TODO after the run:` go through C1-C5 one by one (confirmed / not confirmed, with the numbers); state how often live PubMed found the gold paper, because it caps what any system can gain at 100 %; say what this means for the question "does dynamic orchestration help when retrieval is not saturated?".
+""")
 
 # --------------------------------------------------------------------------------------------- 13-14
 md("""
