@@ -1,0 +1,16 @@
+# Versions used on the DISI cluster (giano, Python venv); torch is the CUDA 12.8 build.
+torch==2.11.0
+transformers==5.20.2
+sentence-transformers==6.2.0
+accelerate==1.15.0
+peft==0.21.2
+datasets==5.1.0
+faiss-cpu==1.15.1
+langgraph==1.2.16
+langchain-core==1.7.0
+metapub==0.7.5
+rouge_score==0.1.2
+pandas==3.1.0
+numpy==2.5.4
+scipy==1.18.1
+matplotlib==3.11.2

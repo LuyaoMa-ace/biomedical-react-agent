@@ -72,8 +72,8 @@ code("""
     print("working directory:", os.getcwd(), "|", sorted(os.listdir("."))[:8])
 """)
 code("""
-    # 📦 Packages.   TODO: pin the exact versions listed in env/requirements.txt before submission
-    %pip install -q "transformers>=5" sentence-transformers faiss-cpu langgraph langchain-core metapub datasets rouge-score pandas scipy matplotlib
+    # 📦 Packages (versions as used on the cluster; see env/requirements.txt).
+    %pip install -q transformers==5.20.2 sentence-transformers==6.2.0 faiss-cpu==1.15.1 langgraph==1.2.16 langchain-core==1.7.0 metapub==0.7.5 datasets==5.1.0 rouge-score==0.1.2 pandas==3.1.0 numpy==2.5.4 scipy==1.18.1 matplotlib==3.11.2
 """)
 md("""
     > **RESTART** the runtime after the installation, then continue from the next cell.

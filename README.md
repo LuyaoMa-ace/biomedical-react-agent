@@ -55,7 +55,7 @@ PaperSearchQA, a biomedical factoid QA benchmark built on PubMed abstracts.
 
 ```
 README.md                     this file
-notebook/                     TODO: final notebook (step-by-step, reads results/)
+notebook/                     final notebook (step-by-step, reads results/)
 scripts/                      all code (numbered in execution order) and SLURM scripts
   common.py qa_utils.py prompts.py llm.py tools.py agent.py        shared modules
   01_sample_data.py 02_fetch_abstracts.py 03_retrieval_eval.py     data + retrieval comparison
