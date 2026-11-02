@@ -3,8 +3,6 @@
 Course project for *Big Data Analytics and Text Mining* (University of Bologna).
 Author: Luyao Ma — project proposal by Lorenzo Molfetta.
 
-> **Status of this file:** skeleton. Lines marked `TODO` are filled in once all runs are final.
-
 ## 1. What this project does
 
 We study whether a **dynamic, tool-using agent** (LangGraph, ReAct) beats **fixed retrieval pipelines** on
@@ -106,7 +104,9 @@ sbatch run_baselines.sbatch && sbatch run_static_chains.sbatch
 sbatch --export=ALL,CONFIG=full run_agent.sbatch
 sbatch --export=ALL,CONFIG=full,EXTRA="--orchestrator granite" run_agent.sbatch
 sbatch --export=ALL,CONFIG=full,EXTRA="--guardrail" run_agent.sbatch
-# TODO: list the exact final set of runs used in the report
+# the remaining runs of the report are submitted by two wrappers (read them for the exact flags):
+bash run_ablations.sh      # one tool removed at a time, with and without the guardrail; Granite local-index variants
+bash run_holdout.sh        # all frozen systems on the 500 held-out questions (after python 15_sample_holdout.py)
 
 # 5. analysis (CPU)
 python 11_exp_tables.py            # ladder, experiment 1 (ablations), experiment 2 (vs fixed chains)

@@ -64,11 +64,13 @@ md("""
     > so only the small *live demos* need a GPU (switch `LIVE`).
 """)
 code("""
-    # Unzip the submission archive if we are on Colab (skip locally)
+    # Unzip the submission archive if we are on Colab; go to the project root if opened from notebook/
     import os, zipfile, pathlib
     if pathlib.Path("bigdata_project.zip").exists() and not pathlib.Path("scripts").exists():
         zipfile.ZipFile("bigdata_project.zip").extractall(".")
         os.chdir("bigdata_project")
+    if not pathlib.Path("scripts").exists() and pathlib.Path("../scripts").exists():   # opened from notebook/
+        os.chdir("..")
     print("working directory:", os.getcwd(), "|", sorted(os.listdir("."))[:8])
 """)
 code("""
