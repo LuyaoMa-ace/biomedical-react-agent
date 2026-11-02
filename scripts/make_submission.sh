@@ -19,7 +19,7 @@ find "$P/results" -maxdepth 1 -type f ! -name '*smoke*' -exec cp {} "$S"/results
 # traces: gzip, skip smoke tests
 for f in "$P"/traces/*.jsonl; do case "$f" in *smoke*) continue;; esac; gzip -c "$f" > "$S/traces/$(basename "$f").gz"; done
 cp "$P"/cache/*.jsonl "$S"/cache/ 2>/dev/null || true
-pip freeze > "$S/env/requirements.txt" 2>/dev/null || true; [ -s "$S/env/requirements.txt" ] || { rm -f "$S/env/requirements.txt"; echo "!!! pip freeze produced nothing: activate the venv and rerun, README points to env/requirements.txt"; }
+if [ -f "$P/env/requirements.txt" ]; then cp "$P/env/requirements.txt" "$S/env/requirements.txt"; else pip freeze > "$S/env/requirements.txt" 2>/dev/null || true; fi; [ -s "$S/env/requirements.txt" ] || { rm -f "$S/env/requirements.txt"; echo "!!! pip freeze produced nothing: activate the venv and rerun, README points to env/requirements.txt"; }
 
 # --- safety checks -----------------------------------------------------------------------------------------
 echo "--- scanning for secrets ---"
