@@ -64,6 +64,7 @@ scripts/                      all code (numbered in execution order) and SLURM s
   11_exp_tables.py 12_trace_analysis.py 13_paraphrase_split.py      experiments 1-3 + extra analyses
   14_prompt_sensitivity.py                                          answer-prompt wording check
   15_sample_holdout.py run_holdout.sh                               held-out validation set (500 new questions)
+  16_coverage.py run_coverage.sh run_coverage_chains.sbatch         coverage experiment (gold papers withheld from the index) and its analysis
   run_*.sbatch                                                      SLURM job scripts (L40 / RTX 2080 Ti)
 data/    sample.jsonl corpus.jsonl corpus_distractors.jsonl distractor_pmids.jsonl
 results/ metrics (json/csv), figures (png), tables (md), analysis logs
@@ -117,6 +118,11 @@ python 13_paraphrase_split.py
 python 15_sample_holdout.py && bash run_holdout.sh
 python 11_exp_tables.py --tag _holdout --out ../results/holdout
 python 08_stats.py --systems none vanilla_rag reformulate_rag reasoning_rag fda_rag --ref vanilla_rag --suffix _v3_holdout --out stats_baselines_holdout
+
+# 6. coverage experiment (frozen systems, 500 held-out questions; needs NCBI_API_KEY for live PubMed)
+bash run_coverage.sh smoke   # 16 questions, a few minutes
+bash run_coverage.sh         # 8 jobs
+python 16_coverage.py        # -> ../results/coverage/
 # prompt sensitivity (3 reworded answer prompts x {Vanilla RAG, Baseline 0})
 sbatch run_prompt_sens.sbatch && python 14_prompt_sensitivity.py
 ```
@@ -164,3 +170,7 @@ Only the `train` split is used (nothing is trained). The paper's RAG baseline se
 
 ### Held-out validation (500 new questions)
 Systems were frozen and rerun on `data/holdout.jsonl`; all six predictions written beforehand held. Baseline 0 0.248; Vanilla RAG 0.746; fixed chains 0.744-0.746; MedGemma full agent 0.644 (-0.102 vs Vanilla, significant); with guardrail 0.722 (-0.024, p = 0.073); index-only 0.726 (-0.020, n.s.); Granite full 0.518, guarded 0.682, local-index guarded 0.708 (-0.038, significant). No agent configuration beats the fixed chains on either sample. Tables in `results/holdout/`.
+
+### Coverage experiment (gold papers withheld from the index)
+The gold paper of a fixed random 0 / 50 / 100 % of the held-out questions is removed from the index (nested sets, `common.withheld_qids`); only live PubMed can still supply it. Fixed chains with the same tools as the agent (`pubmed_rag`, `hybrid_rag`) and an agent without PubMed serve as controls. Predictions were written first (four of five held; the PubMed recovery rate was 8-9 %, just below the predicted 10-40 %).
+Vanilla RAG 0.746 / 0.488 / 0.220; retrieve + PubMed chain 0.730 / 0.528 / 0.338; agent + guardrail 0.722 / 0.490 / 0.240; agent without PubMed 0.730 / 0.494 / 0.240. The agent calls PubMed on 10.8 % of the withheld and 3.6 % of the retained questions, so it adds nothing over the same agent without PubMed, and the always-PubMed chain beats it by 0.038 (50 %) and 0.098 (100 %). Tables and figure in `results/coverage/`.

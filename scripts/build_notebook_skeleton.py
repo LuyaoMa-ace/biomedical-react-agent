@@ -662,8 +662,25 @@ code("""
         display(Image(str(ROOT / "results" / "coverage" / "fig_coverage.png"), width=620))
 """)
 md("""
-    **Reading the tables.** `TODO after the run:` go through C1-C5 one by one (confirmed / not confirmed, with the numbers); state how often live PubMed found the gold paper, because it caps what any system can gain at 100 %; say what this means for the question "does dynamic orchestration help when retrieval is not saturated?".
+    **Result: four of the five predictions held; C2 held only in part.**
+
+    | | Prediction | Result | |
+    |---|---|---|---|
+    | C1 | Vanilla 0.44-0.58 (50 %) and 0.20-0.34 (100 %) | 0.488 and 0.220 | yes |
+    | C2 | PubMed finds the gold paper for 10-40 % of withheld questions; retrieve + PubMed beats Vanilla by 0.04-0.20 at 100 % | gold paper found for **8.4-9.0 %** (just below the range); +0.118 | **first half no**, second half yes |
+    | C3 | the agent does not notice missing coverage (PubMed-call share differs by < 0.10; < 0.30 at 100 %) | 10.8 % of withheld vs 3.6 % of retained questions (difference 0.072); 7.0 % at 100 % | yes |
+    | C4 | PubMed adds little inside the agent | full + guardrail minus no-PubMed: -0.004 (50 %), 0.000 (100 %), both not significant | yes |
+    | C5 | the always-PubMed chain is at least as good as the agent at 100 %; within -0.05..0 of Vanilla at 0 % | +0.098 over the agent (p < 0.001); -0.016 vs Vanilla | yes |
+
+    What the experiment shows:
+    - **Coverage is what limits accuracy.** Vanilla RAG falls from 0.746 to 0.488 to 0.220 as 0 / 50 / 100 % of the gold papers are withheld. At 100 % it is even below Baseline 0 (0.248): unrelated abstracts do not help (we did not test this small difference).
+    - **Live PubMed is a weak but real substitute.** Keyword search finds the exact source paper for only about 9 % of the questions, yet the PubMed-only chain is 0.088 above no tools (CI [0.052, 0.124]) and retrieve + PubMed is 0.118 above Vanilla RAG at 100 %: related abstracts often carry the needed fact even when they are not the source paper.
+    - **The agent does not use it.** It calls PubMed on 10.8 % of the withheld questions (3.6 % of the retained ones, 7.0 % overall at 100 %), roughly three times more often when the index cannot answer, but from a very low base: about nine withheld questions in ten get no PubMed call. As a result the agent with PubMed is not better than the same agent without it.
+    - **A fixed chain that always calls both tools beats the agent exactly where the tool matters:** -0.038 at 50 % (p = 0.025) and -0.098 at 100 % (p < 0.001); at 0 % there is no difference (-0.008). So the extra tool has value, and the failure is the *decision* to use it, not a lack of value.
+    - Descriptive split at 50 % (250 questions each; not tested): the agent against Vanilla is +0.044 on withheld and -0.040 on retained questions (net +0.002); PubMed inside the agent is +0.028 on withheld and -0.036 on retained questions, which fits "helps when needed, adds noise when not".
+    - Caveats: one random withheld subset per level (seed 0); MedGemma scheduler only (no Granite run); PubMed queries are written by the LLM and PubMed ANDs all terms, so a better query strategy might find the gold paper more often; live PubMed results are stored in `cache/` for reproducibility.
 """)
+
 
 # --------------------------------------------------------------------------------------------- 13-14
 md("""
@@ -681,7 +698,7 @@ md("""
     | MedGemma agent, index only | 0.752 | 0.726 | -0.012 / -0.020 (not significant) |
     | Granite agent + local-index guardrail | 0.744 | 0.708 | -0.020 (n.s.) / -0.038 (significant) |
 
-    and they cost roughly 15-20 times the latency (3.0-3.4 s per question against 0.18-0.19 s). The held-out run is the strongest piece of evidence: the six predictions written before it all held (section 12d).
+    and they cost roughly 15-20 times the latency (3.0-3.4 s per question against 0.18-0.19 s). The held-out run is the strongest piece of evidence: the six predictions written before it all held (section 12d). The coverage experiment (section 12e) removes the most favourable excuse for this result, a retriever that already finds everything: when the local index is incomplete a fixed chain that always calls PubMed still beats the agent (+0.038 at 50 % and +0.098 at 100 % withheld).
 
     ## What we found
 
@@ -689,12 +706,13 @@ md("""
     - **Without the guardrail the extra tools hurt** (-8 EM points on development, -10 held-out), because of the "query without evidence" failure: the rewriting tools return a query, the small scheduler stops, and the answer generator gets no documents.
     - **With the guardrail no single tool matters** (development sample only; not repeated held-out): removing OpenFDA, PubMed, the reasoning tool or the reformulator changes EM by -0.006 to +0.014 for MedGemma and 0.000 to +0.008 for Granite, with every 95 % CI including 0 (about ±0.025). OpenFDA is never called. The tools only add time: Granite without the reasoning tool or the reformulator is as accurate at about 1.7 s instead of 3.0 s. An ablation can only say "no detectable effect", not "zero effect".
     - A tool-calling model (Granite) really uses all tools and stops by itself, but misunderstands what the rewriting tools return; it is also the weaker scheduler (-4 points with the original guardrail, significant on both samples).
+    - **When the index is incomplete the extra tool becomes useful, but the agent does not exploit it** (section 12e): a fixed chain that always adds live PubMed is +0.118 over Vanilla RAG at 100 % withheld, while the agent calls PubMed on only 7-11 % of the questions and ends up 0.098 behind that chain.
     - Our retrieval baseline is strong (Recall@10 0.97) and the oracle over the four fixed chains is only about +3 to +5 points: little room for any orchestrator.
 
     **Limitations.** 500 questions per sample (a paired difference needs about ±2 points to be detectable); a closed 5,000-paper corpus (the dataset paper searches 16M abstracts, so absolute numbers are not comparable);
     the answer prompt, the agent prompt and the guardrail were developed by reading failures on the development sample. We then froze every system and re-ran it on 500 new questions: the conclusions hold, the guarded MedGemma gap to Vanilla RAG is unchanged (-0.022 vs -0.024), and only the Granite local-index guardrail variant, which was designed on the development sample, looks worse on new data (-0.020 → -0.038). The held-out set has 10 questions in category 7 (not 20) and 10 extra in category 4, so per-category numbers are noise, and the per-tool ablation was not repeated on it. There is no systematic prompt search (prompt wording moves EM by about ±5 points, section 12b), so the prompts are shared and fixed, not optimal;
     the scheduler prompt was developed with MedGemma and reused unchanged for Granite, so part of the Granite gap may be prompt fit; only zero-shot small schedulers were tested (no few-shot tool demos, no fine-tuning, no larger LLM);
-    the guardrail is a post-hoc fix (its effect was predicted before the run); EM underestimates correct answers with different wording, and we did not audit the errors one by one.
+    the coverage experiment uses one random withheld subset per level and only the MedGemma scheduler; the guardrail is a post-hoc fix (its effect was predicted before the run); EM underestimates correct answers with different wording, and we did not audit the errors one by one.
 
     **Related work.**
     - *Benchmark.* PaperSearchQA (Burgess et al., 2026) introduces the questions; it searches 16M abstracts and trains a search agent with RL (Search-R1, Jin et al., 2025). We do not train anything and search 5,000 abstracts, so absolute numbers are not comparable.
