@@ -16,7 +16,7 @@ cp "$P"/scripts/*.py "$P"/scripts/*.sbatch "$S"/scripts/ 2>/dev/null || true
 cp "$P"/data/*.jsonl "$S"/data/
 # results: tables, figures, analysis logs; skip smoke tests
 find "$P/results" -maxdepth 1 -type f ! -name '*smoke*' -exec cp {} "$S"/results/ \;
-[ -d "$P/results/holdout" ] && cp -r "$P/results/holdout" "$S"/results/holdout
+for d in "$P"/results/*/; do case "$d" in *smoke*) continue;; esac; cp -r "$d" "$S"/results/; done   # sub-folders (holdout/, coverage/, ...)
 # traces: gzip, skip smoke tests
 for f in "$P"/traces/*.jsonl; do case "$f" in *smoke*) continue;; esac; gzip -c "$f" > "$S/traces/$(basename "$f").gz"; done
 cp "$P"/cache/*.jsonl "$S"/cache/ 2>/dev/null || true
