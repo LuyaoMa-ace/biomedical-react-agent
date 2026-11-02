@@ -161,3 +161,6 @@ Generation is greedy (`do_sample=False`), so reruns are deterministic up to GPU 
 Our HuggingFace copy of PaperSearchQA has 11 categories (`cat_num` 0–10, 0 = "Other"); the paper lists ten.
 Only the `train` split is used (nothing is trained). The paper's RAG baseline searches 16M abstracts; ours searches
 5,000, so absolute accuracies are not comparable.
+
+### Held-out validation (500 new questions)
+Systems were frozen and rerun on `data/holdout.jsonl`; all six predictions written beforehand held. Baseline 0 0.248; Vanilla RAG 0.746; fixed chains 0.744-0.746; MedGemma full agent 0.644 (-0.102 vs Vanilla, significant); with guardrail 0.722 (-0.024, p = 0.073); index-only 0.726 (-0.020, n.s.); Granite full 0.518, guarded 0.682, local-index guarded 0.708 (-0.038, significant). No agent configuration beats the fixed chains on either sample. Tables in `results/holdout/`.

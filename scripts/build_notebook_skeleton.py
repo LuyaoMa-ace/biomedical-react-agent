@@ -582,8 +582,26 @@ code("""
         print("run the held-out experiments first (README section 5)")
 """)
 md("""
-    **Reading the table.** `TODO after the run:` go through P1-P6 one by one (confirmed / not confirmed, with the numbers) and say what changes in the conclusions, if anything.
+    **Result: all six predictions held.**
+
+    | | Prediction | Held-out result | |
+    |---|---|---|---|
+    | P1 | Baseline 0 in [0.22, 0.36]; Vanilla in [0.70, 0.82] | 0.248; 0.746 | yes |
+    | P2 | fixed chains within ±0.03 of Vanilla, none significantly better | 0.746 / 0.744 / 0.744; all paired differences ≤ 0.002, p = 1.0 | yes |
+    | P3 | MedGemma full ≥ 0.04 below Vanilla | 0.644, −0.102 (CI [−0.138, −0.068]) | yes |
+    | P4 | guardrail ≥ +0.03; guarded agent not above Vanilla | +0.078 (CI [+0.050, +0.108]); 0.722 vs 0.746, −0.024 (CI [−0.048, 0.000], p = 0.073) | yes |
+    | P5 | Granite full < MedGemma full; local-index Granite within 0.04 of guarded MedGemma; none above Vanilla | 0.518 < 0.644; 0.708 vs 0.722 (−0.014); best Granite variant 0.038 *below* Vanilla (significant) | yes |
+    | P6 | index-only not different from Vanilla | 0.726 vs 0.746, −0.020 (CI [−0.046, +0.006], p = 0.164) | yes |
+
+    What the held-out run adds:
+    - The development conclusions replicate on new questions: the unmodified agent loses about 10 EM points to every fixed chain, in 10 of 11 categories, and the loss comes with Recall@10 falling from 0.956 to 0.800.
+    - The guardrail repairs most of the loss, but on these questions the guarded MedGemma agent ends 2.4 points *below* Vanilla (borderline, p = 0.073), a little less favourable than on the development sample. Some of the guardrail's development gain is therefore tuning to that sample, and the honest summary is "close to Vanilla, never above it".
+    - The index-only agent (+0.082 over the full agent, as +0.068 on development) is again statistically indistinguishable from Vanilla. No configuration of the dynamic agent beats the fixed chains, on either sample.
+    - Granite is the weaker scheduler (0.518 vs 0.644 unguarded). The original guardrail leaves it 4.0 points behind guarded MedGemma (significant); the local-index variant, which was designed on the development sample, closes the gap to 1.4 points (not significant), but is still 3.8 points below Vanilla.
+    - Not repeated on held-out data: the per-tool ablations of section 8. Those are therefore development-sample results only.
+    - Caveat: the held-out set has 10 category-7 questions (not 20) and 10 extra in category 4; category-level rows are noise at these sizes.
 """)
+
 
 # --------------------------------------------------------------------------------------------- 13-14
 md("""
