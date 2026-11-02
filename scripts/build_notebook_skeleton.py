@@ -41,6 +41,7 @@ md("""
     1. Set up: packages, secrets, GPU
     2. Dataset: PaperSearchQA
     3. Local retrieval and the embedding models
+    3b. Two classical baselines: BM25 and a BM25 + dense hybrid
     4. The LLM, the answer prompt and the metrics
     5. Baselines: no tools and fixed chains
     6. Tool definition: five tools
@@ -185,6 +186,32 @@ md("""
     `jina` is the best (Recall@1 0.83 vs 0.76 for `bge-m3` and 0.69 for `pubmedbert`), so a general-purpose model beats the biomedical one here.
     All following experiments use `jina` and the 5,000-document index.
 
+""")
+md("""
+    ## 3b. Two classical retrieval baselines: BM25 and a BM25 + dense hybrid
+
+    Every experiment so far uses one very strong dense retriever (`jina`, Recall@10 0.97), which leaves little room for any orchestrator. Here we add the two classical baselines a reader would ask for and measure how much weaker retrieval can get.
+    **Protocol (fixed before running, no tuning).** Same 5,000 documents (title + abstract), the raw question as the query, 500 development and 500 held-out questions.
+    - **BM25**: Okapi BM25, k1 = 1.5, b = 0.75, Lucene idf; lower-cased, tokens `[a-z0-9]+`, English stop words removed, no stemming (a limitation: stemming could help BM25).
+    - **Hybrid**: reciprocal rank fusion of the BM25 and `jina` rankings (top 100 of each, k = 60, equal weights).
+    - **Metrics**: Recall@1/5/10, MRR, nDCG@10, overall and for original vs paraphrased questions; build time, memory and query latency (laptop CPU for BM25, so only the order of magnitude is comparable with the cluster GPU numbers of `jina`).
+
+    | | Prediction (written before the run) |
+    |---|---|
+    | B1 | BM25 is clearly weaker than `jina` on the development sample: Recall@1 in [0.55, 0.75], Recall@10 in [0.82, 0.94], at least 0.03 below `jina` (0.970) |
+    | B2 | BM25 suffers from paraphrasing, dense retrieval does not: Recall@1 on original minus paraphrased questions is at least 0.08 for BM25, below 0.03 in absolute value for `jina` (observed -0.009) |
+    | B3 | The hybrid is at least as good as `jina` (no more than 0.01 below it on Recall@1, @5 and @10), with Recall@10 in [0.965, 0.99] and Recall@1 in [0.82, 0.88] |
+    | B4 | The held-out sample shows the same ordering: BM25 Recall@10 at least 0.03 below `jina`; the hybrid no more than 0.01 below `jina` on Recall@1 and Recall@10 |
+    | B5 | BM25 is far cheaper: building its index for 5,000 documents takes at most 30 s on one CPU core, uses at most 200 MB, answers a query in at most 20 ms, and is at least 10 times faster to build than the 480 s `jina` needs to encode the corpus |
+
+    **Decision rule (fixed in advance).** Retrieval-only numbers come first. If BM25 Recall@10 on the development sample is **at most 0.93**, the weaker retriever is informative and we also run the answer chains and the agent with BM25 and the hybrid. If it is above 0.93, we stop and report only the retrieval table.
+""")
+code("""
+    if have("results/bm25/retrieval_bm25.csv"):
+        display(pd.read_csv(ROOT / "results" / "bm25" / "retrieval_bm25.csv").round(3))
+""")
+md("""
+    **Reading the table.** `TODO after the run:` go through B1-B5 one by one (confirmed / not confirmed, with the numbers) and apply the decision rule.
 """)
 
 # --------------------------------------------------------------------------------------------- 4 LLM and prompt
