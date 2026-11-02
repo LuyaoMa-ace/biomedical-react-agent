@@ -40,3 +40,16 @@ def retrieval_metrics(ranks, ks=(1, 5, 10)):
     for k in ks:
         out[f"nDCG@{k}"] = float(np.where(ranks <= k, 1.0 / np.log2(ranks + 1), 0.0).mean())
     return out
+
+
+def withheld_qids(sample, frac, seed=0):
+    """Question ids whose gold paper is withheld from the index (coverage experiment).
+    One fixed permutation per seed, so the sets are nested: withheld(0.5) is contained in withheld(1.0)."""
+    qids = sorted(int(q) for q in sample.qid)
+    order = np.random.default_rng(seed).permutation(len(qids))
+    return {qids[i] for i in order[:int(round(frac * len(qids)))]}
+
+
+def withheld_pmids(sample, frac, seed=0):
+    w = withheld_qids(sample, frac, seed)
+    return {str(p) for p in sample[sample.qid.isin(w)].pmid}

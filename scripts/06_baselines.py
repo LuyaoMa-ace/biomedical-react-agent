@@ -5,6 +5,11 @@
   reformulate_rag    : query_reformulator -> retrieve_from_index -> answer
   reasoning_rag      : generate_reasoning_query -> retrieve_from_index -> answer
   fda_rag            : retrieve_from_index + query_openfda (drug extracted from the question) -> answer
+Coverage experiment (see 16_coverage.py): two extra chains that always use live PubMed, so the fixed side has the
+same tools as the agent:
+  pubmed_rag         : query_reformulator -> fetch_pubmed_live -> answer
+  hybrid_rag         : query_reformulator -> retrieve_from_index (top-k) + fetch_pubmed_live -> answer
+--withhold F removes the gold paper of a fixed random fraction F of the questions from the index.
 
 Every question goes through exactly the same steps (that is what "static" means).
 Counting convention: tool_calls = tools in the chain (fda_rag always 2: the OpenFDA call is
@@ -19,12 +24,13 @@ Usage: python 06_baselines.py --mode none
 """
 import argparse, json, os, time
 import numpy as np, pandas as pd
-from common import load_data, retrieval_metrics
+from common import load_data, retrieval_metrics, withheld_pmids
 from qa_utils import score_prediction, aggregate
 
 RAG_MODES = ["vanilla_rag", "reformulate_rag", "reasoning_rag", "fda_rag"]
+LIVE_MODES = ["pubmed_rag", "hybrid_rag"]
 p = argparse.ArgumentParser()
-p.add_argument("--mode", choices=["none"] + RAG_MODES, required=True)
+p.add_argument("--mode", choices=["none"] + RAG_MODES + LIVE_MODES, required=True)
 p.add_argument("--n", type=int, default=None, help="only the first n questions (smoke test)")
 p.add_argument("--batch", type=int, default=16)
 p.add_argument("--k", type=int, default=3, help="documents placed in the prompt")
@@ -35,11 +41,15 @@ p.add_argument("--retr_device", default=None, choices=["cpu", "cuda"],
                help="device for the jina query encoder; use cpu on 11GB GPUs")
 p.add_argument("--sample", default="../data/sample.jsonl", help="question file (held-out run: ../data/holdout.jsonl with --tag _holdout)")
 p.add_argument("--tag", default="")
+p.add_argument("--withhold", type=float, default=0.0,
+               help="fraction of questions whose gold paper is removed from the index (needs --tag, e.g. _holdout_w50)")
 p.add_argument("--prompt", default="v3", choices=["v1", "v2", "v3", "v4", "v5", "v6"])
 args = p.parse_args()
 
 assert args.sample == "../data/sample.jsonl" or args.tag, "use --tag when running another question file (traces would collide)"
+assert not args.withhold or args.tag, "use --tag with --withhold (traces would collide)"
 sample, _ = load_data(args.sample)
+withheld = withheld_pmids(sample, args.withhold)
 if args.n:
     sample = sample.head(args.n)
 name = f"baseline_{args.mode}{'' if args.prompt == 'v1' else '_' + args.prompt}{args.tag}"
@@ -82,13 +92,16 @@ PREFILL = PROMPTS[args.prompt].get("prefill")
 if len(todo):
     from llm import MedGemma
     llm = MedGemma(dtype=args.dtype)
-    retriever = openfda = None
-    if args.mode in RAG_MODES:
-        from tools import (LocalRetriever, format_docs, query_reformulator,
+    retriever = openfda = pubmed = None
+    if args.mode in RAG_MODES + LIVE_MODES:
+        from tools import (LocalRetriever, format_docs, query_reformulator, PubMedLive,
                            generate_reasoning_query, extract_drug, OpenFDA, format_fda)
-        retriever = LocalRetriever(tag=args.index_tag, device=args.retr_device)
+    if args.mode in RAG_MODES + ["hybrid_rag"]:
+        retriever = LocalRetriever(tag=args.index_tag, device=args.retr_device, exclude=withheld)
     if args.mode == "fda_rag":
         openfda = OpenFDA()
+    if args.mode in LIVE_MODES:
+        pubmed = PubMedLive()
 
     with open(trace_path, "a") as f:
         for i in range(0, len(todo), args.batch):
@@ -97,7 +110,8 @@ if len(todo):
             t0 = time.time()
             queries, hits, drugs, labels = qs, [None] * m, [""] * m, [{}] * m
             tool_calls, steps = 0, 1
-            if args.mode == "reformulate_rag":
+            live = [[] for _ in range(m)]
+            if args.mode in ("reformulate_rag", "pubmed_rag", "hybrid_rag"):
                 queries = query_reformulator(llm, qs); tool_calls, steps = 1, 2
             elif args.mode == "reasoning_rag":
                 queries = generate_reasoning_query(llm, qs); tool_calls, steps = 1, 2
@@ -106,19 +120,23 @@ if len(todo):
                 labels = [openfda(d) for d in drugs]; tool_calls = 1
             if retriever:
                 hits = retriever.search_batch(queries, k=args.k_eval); tool_calls += 1
+            if pubmed:
+                live = [pubmed(qy) for qy in queries]; tool_calls += 1
 
             prompts = []
-            for q, h, lab, d in zip(qs, hits, labels, drugs):
+            for q, h, lab, d, lv in zip(qs, hits, labels, drugs, live):
                 ctx = ""
-                if h is not None:
+                if h is not None or pubmed:
+                    shown = (h[:args.k] if h is not None else []) + lv
+                    shown = [{**x, "rank": j + 1} for j, x in enumerate(shown)]
                     ctx += ("Use the PubMed abstracts below if they help.\n\nContext:\n"
-                            + format_docs(h[:args.k]) + "\n\n")
+                            + (format_docs(shown) if shown else "(no PubMed results found)") + "\n\n")
                 if lab:
                     ctx += f"Drug label information (OpenFDA) for {d}:\n{format_fda(lab)}\n\n"
                 prompts.append(HEAD + ctx + EXAMPLE + f"Q: {q}\nA:")
             raws = llm.generate(prompts, max_new_tokens=48, prefill=PREFILL)
             lat = (time.time() - t0) / m
-            for (_, r), raw, h, qy, d, lab in zip(chunk.iterrows(), raws, hits, queries, drugs, labels):
+            for (_, r), raw, h, qy, d, lab, lv in zip(chunk.iterrows(), raws, hits, queries, drugs, labels, live):
                 golds = list(dict.fromkeys(list(r.golden_answers) + [r.answer]))
                 rec = {"qid": int(r.qid), "cat_num": int(r.cat_num), "question": r.question,
                        "gold": r.answer, "raw": raw, **score_prediction(raw, golds),
@@ -131,6 +149,9 @@ if len(todo):
                     pm = [x["pmid"] for x in h]
                     rec["gold_rank"] = pm.index(r.pmid) + 1 if r.pmid in pm else 10 ** 6
                     rec["retrieved_pmids"] = pm[:args.k]
+                if pubmed:
+                    rec["pubmed_pmids"] = [x["pmid"] for x in lv]
+                    rec["gold_seen"] = bool(r.pmid in rec["pubmed_pmids"] or r.pmid in rec.get("retrieved_pmids", []))
                 f.write(json.dumps(rec) + "\n")
             f.flush()
             print(f"{min(i + args.batch, len(todo))}/{len(todo)}  {lat:.2f}s/q")
@@ -141,6 +162,8 @@ if "gold_rank" in df:
     res["retrieval"] = retrieval_metrics(df.gold_rank.to_numpy())
     res["retrieval_per_category"] = {int(c): retrieval_metrics(g.gold_rank.to_numpy())
                                      for c, g in df.groupby("cat_num")}
+if "gold_seen" in df:
+    res["gold_seen"] = float(df.gold_seen.mean())
 if "fda_hit" in df:
     res["fda"] = {"drug_extracted": float((df.drug != "").mean()), "label_found": float(df.fda_hit.mean())}
 json.dump(res, open(f"../results/{name}.json", "w"), indent=1)

@@ -9,7 +9,7 @@ Usage: python 09_run_agent.py --config full
 """
 import argparse, json, os, threading, time
 import pandas as pd
-from common import load_data, retrieval_metrics
+from common import load_data, retrieval_metrics, withheld_pmids
 from qa_utils import score_prediction, aggregate
 
 ALL_TOOLS = ["retrieve_from_index", "query_reformulator", "generate_reasoning_query",
@@ -43,12 +43,16 @@ p.add_argument("--guardrail_local", action="store_true",
                help="variant: also retrieve when the evidence contains no local-index result (e.g. PubMed only)")
 p.add_argument("--sample", default="../data/sample.jsonl", help="question file (held-out run: ../data/holdout.jsonl with --tag _holdout)")
 p.add_argument("--tag", default="")
+p.add_argument("--withhold", type=float, default=0.0,
+               help="fraction of questions whose gold paper is removed from the index (coverage experiment; needs --tag)")
 args = p.parse_args()
 if args.guardrail_local:
     args.guardrail = True
 
 assert args.sample == "../data/sample.jsonl" or args.tag, "use --tag when running another question file (traces would collide)"
+assert not args.withhold or args.tag, "use --tag with --withhold (traces would collide)"
 sample, _ = load_data(args.sample)
+withheld = withheld_pmids(sample, args.withhold)
 if args.n:
     sample = sample.head(args.n)
 name = f"agent_{args.config}{'' if args.orchestrator == 'medgemma' else '_granite'}{'_guardlocal' if args.guardrail_local else '_guard' if args.guardrail else ''}{args.tag}"
@@ -70,7 +74,7 @@ if len(todo):
     sched = llm if args.orchestrator == "medgemma" else BatchingLLM(
         CausalLM("ibm-granite/granite-4.0-micro", dtype=args.dtype), max_batch=args.concurrency)
     enabled = CONFIGS[args.config]
-    retriever = LocalRetriever(tag=args.index_tag, device=args.retr_device)
+    retriever = LocalRetriever(tag=args.index_tag, device=args.retr_device, exclude=withheld)
     retr_lock = threading.Lock()                     # one encoder call at a time
     pubmed = PubMedLive() if "fetch_pubmed_live" in enabled else None
     fda = OpenFDA() if "query_openfda" in enabled else None

@@ -12,8 +12,10 @@ from sentence_transformers import SentenceTransformer
 class LocalRetriever:
     """FAISS index over the corpus, queried with jina-embeddings-v5 (query prompt)."""
 
-    def __init__(self, index_dir="../index", tag="_5k", key="jina", device=None):
-        """device: "cuda" / "cpu" / None (auto). Use "cpu" on 11GB GPUs so MedGemma has the whole card."""
+    def __init__(self, index_dir="../index", tag="_5k", key="jina", device=None, exclude=None):
+        """device: "cuda" / "cpu" / None (auto). Use "cpu" on 11GB GPUs so MedGemma has the whole card.
+        exclude: PMIDs treated as absent from the index (coverage experiment); results skip them."""
+        self.exclude = {str(p) for p in (exclude or ())}
         self.docs = [json.loads(l) for l in open(f"{index_dir}/corpus{tag}.jsonl")]
         self.index = faiss.read_index(f"{index_dir}/{key}{tag}.faiss")
         assert self.index.ntotal == len(self.docs), "index and corpus are out of sync"
@@ -26,10 +28,13 @@ class LocalRetriever:
         q = self.enc.encode(queries, task="retrieval", prompt_name="query",
                             normalize_embeddings=True, convert_to_numpy=True,
                             show_progress_bar=False).astype("float32")
-        scores, ids = self.index.search(q, k)
-        return [[{"rank": r + 1, "score": float(s), **{f: self.docs[i][f] for f in
-                  ("pmid", "title", "abstract")}}
-                 for r, (s, i) in enumerate(zip(ss, ii))] for ss, ii in zip(scores, ids)]
+        scores, ids = self.index.search(q, min(k + len(self.exclude), self.index.ntotal))
+        out = []
+        for ss, ii in zip(scores, ids):
+            keep = [(s, i) for s, i in zip(ss, ii) if str(self.docs[i]["pmid"]) not in self.exclude][:k]
+            out.append([{"rank": r + 1, "score": float(s), **{f: self.docs[i][f] for f in
+                         ("pmid", "title", "abstract")}} for r, (s, i) in enumerate(keep)])
+        return out
 
     def search(self, query, k=5):
         return self.search_batch([query], k)[0]
@@ -99,7 +104,10 @@ class _Cache:
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
         if os.path.exists(path):
             for l in open(path):
-                r = json.loads(l)
+                try:
+                    r = json.loads(l)
+                except ValueError:      # a line torn by two jobs appending at once: skip it, the query is refetched
+                    continue
                 self.data[r["key"]] = r["value"]
 
     def get(self, key):
