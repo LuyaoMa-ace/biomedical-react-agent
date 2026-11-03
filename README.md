@@ -76,7 +76,7 @@ env/     requirements.txt (pip freeze of the environment used)
 
 ## 4. Environment
 
-* Python 3.13, PyTorch 2.11 (CUDA 12.8 wheels), transformers 5.x, sentence-transformers, faiss-cpu, langgraph,
+* Python 3.13 on the cluster (used for all experiments; the notebook only reads saved results and runs on any recent Python 3, tested with 3.12 on a laptop and on Colab), PyTorch 2.11 (CUDA 12.8 wheels), transformers 5.x, sentence-transformers, faiss-cpu, langgraph,
   langchain-core, metapub, datasets, rouge-score, peft, pandas, scipy, matplotlib (`env/requirements.txt`).
 * Compute: DISI GPU cluster (SLURM). MedGemma runs in **bfloat16**; fp16 overflows (empty outputs).
   Partition `l40` (48 GB) for everything; `rtx2080` (11 GB) works for MedGemma alone (bf16, retriever on CPU).
@@ -184,3 +184,23 @@ Vanilla RAG 0.746 / 0.488 / 0.220; retrieve + PubMed chain 0.730 / 0.528 / 0.338
 Predictions were written first (B2, B4 and B5 held; B1 in part, BM25 Recall@1 was higher than predicted; B3 did not hold). Development / held-out Recall@10: BM25 0.922 / 0.920, `jina` 0.968 / 0.956, equal-weight RRF hybrid 0.954 / 0.958. The dense retriever's advantage lies in the paraphrased questions (Recall@1 on original vs paraphrased: BM25 0.873 / 0.690, `jina` 0.825 / 0.834), and the hybrid does not reliably beat `jina`. BM25 builds in about a second with a 5.7 MB index. We did not run the answer chains or the agent with these retrievers (stopped at the retrieval table for time). Note: on the cluster's generic virtual CPU, FAISS crashes with `Illegal instruction` when more than about 20 queries are searched in one call, so `17b_dense_top100.py` searches in batches of 16 (as `06_baselines.py` does). Tables in `results/bm25/`.
 
 The notebook was run end to end on a Colab CPU runtime (upload `notebook/PaperSearchQA_ReAct_Agent.ipynb` and `bigdata_project.zip`; it reads the saved results, so no GPU is needed) and on a laptop. The GPU demos (`LIVE`) and the experiments themselves were run on the DISI cluster and were not re-run on Colab.
+
+## References
+
+- Asai, A., Wu, Z., Wang, Y., Sil, A., Hajishirzi, H. (2024). *Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.* ICLR 2024. https://arxiv.org/abs/2310.11511
+- Burgess, J., et al. (2026). *PaperSearchQA: Learning to Search and Reason over Scientific Papers with RLVR.* EACL 2026. https://arxiv.org/abs/2601.18207 (dataset: https://huggingface.co/datasets/jmhb/PaperSearchQA)
+- Chen, B., et al. (2023). *FireAct: Toward Language Agent Fine-tuning.* https://arxiv.org/abs/2310.05915
+- Chen, J., et al. (2024). *BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation.* https://arxiv.org/abs/2402.03216
+- Cormack, G. V., Clarke, C. L. A., Büttcher, S. (2009). *Reciprocal Rank Fusion Outperforms Condorcet and Individual Rank Learning Methods.* SIGIR 2009.
+- Douze, M., et al. (2024). *The Faiss Library.* https://arxiv.org/abs/2401.08281
+- Dror, R., Baumer, G., Shlomov, S., Reichart, R. (2018). *The Hitchhiker's Guide to Testing Statistical Significance in Natural Language Processing.* ACL 2018. https://aclanthology.org/P18-1128/
+- IBM (2025). *granite-4.0-micro* (model card). https://huggingface.co/ibm-granite/granite-4.0-micro
+- Jeong, S., Baek, J., Cho, S., Hwang, S. J., Park, J. C. (2024). *Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity.* NAACL 2024. https://arxiv.org/abs/2403.14403
+- Jin, B., et al. (2025). *Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning.* COLM 2025. https://arxiv.org/abs/2503.09516
+- Kamalloo, E., Dziri, N., Clarke, C. L. A., Rafiei, D. (2023). *Evaluating Open-Domain Question Answering in the Era of Large Language Models.* ACL 2023. https://arxiv.org/abs/2305.06984
+- Robertson, S., Zaragoza, H. (2009). *The Probabilistic Relevance Framework: BM25 and Beyond.* Foundations and Trends in Information Retrieval 3(4).
+- Sellergren, A., et al. (2025). *MedGemma Technical Report.* https://arxiv.org/abs/2507.05201 (model used here: `google/medgemma-1.5-4b-it`)
+- Shen, W., et al. (2024). *Small LLMs Are Weak Tool Learners: A Multi-LLM Agent.* EMNLP 2024. https://arxiv.org/abs/2401.07324
+- Weller, O., et al. (2024). *When do Generative Query and Document Expansions Fail? A Comprehensive Study Across Methods, Retrievers, and Datasets.* EACL 2024 (Findings). https://arxiv.org/abs/2309.08541
+- Yao, S., et al. (2022). *ReAct: Synergizing Reasoning and Acting in Language Models.* arXiv 2210.03629 (ICLR 2023). https://arxiv.org/abs/2210.03629
+- Embedding models used: `jinaai/jina-embeddings-v5-text-small` and `NeuML/pubmedbert-base-embeddings` (Hugging Face model cards). Tools and services: LangGraph (https://github.com/langchain-ai/langgraph), NCBI E-utilities through `metapub` (PubMed), openFDA drug label API.

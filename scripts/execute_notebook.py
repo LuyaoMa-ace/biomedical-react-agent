@@ -23,6 +23,7 @@ for i, src in saved.items():
     nb.cells[i].source = src
 bad = [i for i, c in enumerate(nb.cells) if c.cell_type == "code" and any(
     "(not found:" in o.get("text", "") or "no trace file" in o.get("text", "") for o in c.outputs)]
+nb.metadata["language_info"] = {"name": "python"}      # do not record the local Python version in the shipped notebook
 nbformat.write(nb, out)
 n_code = sum(c.cell_type == "code" for c in nb.cells)
 print(f"executed {n_code} code cells -> {out}; cells with missing files: {bad or 'none'}")

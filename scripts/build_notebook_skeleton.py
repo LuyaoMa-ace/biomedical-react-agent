@@ -53,6 +53,7 @@ md("""
     12. An extra look: paraphrased questions (12b prompt sensitivity, 12c fixed-chain ranking, 12d held-out validation, 12e coverage experiment)
     13. Discussion, limitations and related work
     14. Reproducibility
+    References
 """)
 
 # --------------------------------------------------------------------------------------------- 1 setup
@@ -776,6 +777,29 @@ md("""
 
     Every number in this notebook comes from `results/` and `traces/`, produced by the numbered scripts in `scripts/` (see `README.md` for the exact commands and SLURM jobs).
     Seed 42, greedy decoding, bf16, one question per PMID. All runs are resumable.
+    **Python.** All experiments ran with Python 3.13 on the DISI cluster (`env/requirements.txt`). This notebook only reads the saved results, so it runs on any recent Python 3 (tested with 3.12 on a laptop and on a Colab CPU runtime).
+""")
+
+md("""
+    # 📖 References
+
+    - Asai, A., Wu, Z., Wang, Y., Sil, A., Hajishirzi, H. (2024). *Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.* ICLR 2024. https://arxiv.org/abs/2310.11511
+    - Burgess, J., et al. (2026). *PaperSearchQA: Learning to Search and Reason over Scientific Papers with RLVR.* EACL 2026. https://arxiv.org/abs/2601.18207 (dataset: https://huggingface.co/datasets/jmhb/PaperSearchQA)
+    - Chen, B., et al. (2023). *FireAct: Toward Language Agent Fine-tuning.* https://arxiv.org/abs/2310.05915
+    - Chen, J., et al. (2024). *BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation.* https://arxiv.org/abs/2402.03216
+    - Cormack, G. V., Clarke, C. L. A., Büttcher, S. (2009). *Reciprocal Rank Fusion Outperforms Condorcet and Individual Rank Learning Methods.* SIGIR 2009.
+    - Douze, M., et al. (2024). *The Faiss Library.* https://arxiv.org/abs/2401.08281
+    - Dror, R., Baumer, G., Shlomov, S., Reichart, R. (2018). *The Hitchhiker's Guide to Testing Statistical Significance in Natural Language Processing.* ACL 2018. https://aclanthology.org/P18-1128/
+    - IBM (2025). *granite-4.0-micro* (model card). https://huggingface.co/ibm-granite/granite-4.0-micro
+    - Jeong, S., Baek, J., Cho, S., Hwang, S. J., Park, J. C. (2024). *Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity.* NAACL 2024. https://arxiv.org/abs/2403.14403
+    - Jin, B., et al. (2025). *Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning.* COLM 2025. https://arxiv.org/abs/2503.09516
+    - Kamalloo, E., Dziri, N., Clarke, C. L. A., Rafiei, D. (2023). *Evaluating Open-Domain Question Answering in the Era of Large Language Models.* ACL 2023. https://arxiv.org/abs/2305.06984
+    - Robertson, S., Zaragoza, H. (2009). *The Probabilistic Relevance Framework: BM25 and Beyond.* Foundations and Trends in Information Retrieval 3(4).
+    - Sellergren, A., et al. (2025). *MedGemma Technical Report.* https://arxiv.org/abs/2507.05201 (model used here: `google/medgemma-1.5-4b-it`)
+    - Shen, W., et al. (2024). *Small LLMs Are Weak Tool Learners: A Multi-LLM Agent.* EMNLP 2024. https://arxiv.org/abs/2401.07324
+    - Weller, O., et al. (2024). *When do Generative Query and Document Expansions Fail? A Comprehensive Study Across Methods, Retrievers, and Datasets.* EACL 2024 (Findings). https://arxiv.org/abs/2309.08541
+    - Yao, S., et al. (2022). *ReAct: Synergizing Reasoning and Acting in Language Models.* arXiv 2210.03629 (ICLR 2023). https://arxiv.org/abs/2210.03629
+    - Embedding models used: `jinaai/jina-embeddings-v5-text-small` and `NeuML/pubmedbert-base-embeddings` (Hugging Face model cards). Tools and services: LangGraph (https://github.com/langchain-ai/langgraph), NCBI E-utilities through `metapub` (PubMed), openFDA drug label API.
 """)
 
 nb = {"cells": cells,
