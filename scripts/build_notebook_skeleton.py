@@ -208,11 +208,31 @@ md("""
 """)
 code("""
     if have("results/bm25/retrieval_bm25.csv"):
-        display(pd.read_csv(ROOT / "results" / "bm25" / "retrieval_bm25.csv").round(3))
+        _r = pd.read_csv(ROOT / "results" / "bm25" / "retrieval_bm25.csv")
+        display(_r[_r.subset == "all"].drop(columns="subset").round(3))
+        print("Recall@1 by question type (original vs paraphrased):")
+        display(_r[_r.subset != "all"].pivot_table(index=["sample", "method"], columns="subset", values="Recall@1").round(3))
+        print("BM25 cost (laptop CPU):", {k: (round(v, 2) if isinstance(v, float) else v) for k, v in json.load(open(ROOT / "results" / "bm25" / "timing_macbook_cpu.json")).items() if k != "latency_ms_per_query"})
 """)
 md("""
-    **Reading the table.** `TODO after the run:` go through B1-B5 one by one (confirmed / not confirmed, with the numbers) and apply the decision rule.
+    **Result: B2, B4 and B5 held; B1 held in part; B3 did not hold.** (`jina` here is recomputed from its saved top-100 lists, so it differs from the earlier table by one question: 0.968 vs 0.970 Recall@10.)
+
+    | | Prediction | Result | |
+    |---|---|---|---|
+    | B1 | BM25 Recall@1 in [0.55, 0.75], Recall@10 in [0.82, 0.94], at least 0.03 below `jina` | Recall@1 **0.774**, Recall@10 0.922 (0.046 below `jina`) | **Recall@1 no** (BM25 is stronger than predicted), rest yes |
+    | B2 | Recall@1 original minus paraphrased: at least 0.08 for BM25, below 0.03 for `jina` | BM25 0.183 (held-out 0.134); `jina` -0.009 (+0.012) | yes |
+    | B3 | the hybrid is at most 0.01 below `jina` on Recall@1/5/10; Recall@10 in [0.965, 0.99] | Recall@1 -0.002, Recall@5 **-0.022**, Recall@10 **-0.014** (0.954) | **no** |
+    | B4 | held-out: same ordering | BM25 0.036 below `jina` at Recall@10; the hybrid +0.014 at Recall@1 and +0.002 at Recall@10 | yes |
+    | B5 | build ≤ 30 s, ≤ 200 MB, ≤ 20 ms/query, ≥ 10 times faster than `jina`'s 480 s | 1.2 s, 42 MB peak (5.7 MB index), 0.21 ms; about 400 times faster (different hardware) | yes |
+
+    What we learn:
+    - **BM25 is a strong baseline.** It is only 4.6 Recall@10 points and 5.6 Recall@1 points below `jina` on the development sample (0.922 vs 0.968, 0.774 vs 0.830), and about the same on the held-out sample (0.920 vs 0.956, 0.802 vs 0.844). We expected a larger gap.
+    - **The dense retriever's advantage lies entirely in the paraphrased questions.** On the original questions BM25 is as good or better (Recall@1 0.873 vs 0.825 on development, 0.865 vs 0.850 held-out); on the paraphrased ones it drops to 0.690 (0.731) while `jina` stays at 0.834 (0.838).
+    - **An equal-weight hybrid does not reliably beat the dense retriever.** It is a little worse on development and a little better on held-out data, by a few questions each time (one question is 0.002), i.e. within the noise of 500 questions. We did not tune the fusion weights, by design.
+    - **Cost:** BM25 is built in about a second on a laptop CPU with a 5.7 MB index and answers in 0.2 ms, while `jina` needs a GPU and about 480 s to encode the corpus.
+    - **Decision rule:** BM25 Recall@10 on the development sample is 0.922, below the 0.93 threshold, so the weaker retriever is used for the answer chains and the agent in the next step (if completed, see below).
 """)
+
 
 # --------------------------------------------------------------------------------------------- 4 LLM and prompt
 md("""
