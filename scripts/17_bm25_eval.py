@@ -7,7 +7,8 @@ Protocol (fixed before running, no tuning): same 5,000 documents (title + abstra
 Ranks beyond 100 count as misses for every method, so Recall@k, MRR and nDCG@10 are computed the same way everywhere.
 
   python 17_bm25_eval.py --data_dir ../data --out ../results/bm25                 BM25 only (CPU, no index needed)
-  python 17_bm25_eval.py --hybrid --index_dir ../index                            + jina and hybrid (needs the FAISS index; run on giano)
+  python 17b_dense_top100.py                                                      (on giano, GPU) jina top-100 per question -> JSON
+  python 17_bm25_eval.py --hybrid                                                 + jina and hybrid, reading those JSON files (CPU)
 
 Writes <out>/retrieval_bm25_only.csv (BM25 only) or <out>/retrieval_bm25.csv (with --hybrid) and <out>/timing_<tag>.json.
 """
@@ -82,9 +83,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--data_dir", default="../data")
     ap.add_argument("--out", default="../results/bm25")
-    ap.add_argument("--hybrid", action="store_true", help="also evaluate jina and the BM25 + jina hybrid (needs ../index)")
-    ap.add_argument("--index_dir", default="../index")
-    ap.add_argument("--device", default=None, choices=["cpu", "cuda"])
+    ap.add_argument("--hybrid", action="store_true", help="also evaluate jina and the BM25 + jina hybrid (reads <out>/dense_top100_*.json from 17b)")
     ap.add_argument("--tag", default="local", help="label for the timing file (the machine the timing was measured on)")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
@@ -103,11 +102,6 @@ if __name__ == "__main__":
     tracemalloc.stop()
     print(f"BM25 index: {build_s:.2f} s, index {bm25.size_mb():.1f} MB, peak Python memory while building {peak_mb:.1f} MB, vocabulary {len(bm25.vocab)}")
 
-    dense = None
-    if args.hybrid:
-        from tools import LocalRetriever
-        dense = LocalRetriever(index_dir=args.index_dir, tag="_5k", device=args.device)
-
     rows, latency = [], {}
     for name, path in samples.items():
         s, _ = load_data(path, f"{D}/corpus.jsonl")
@@ -115,8 +109,10 @@ if __name__ == "__main__":
         t0 = time.time()
         lists = {"BM25": [top_pmids(bm25.score(q), pmids) for q in qs]}
         latency[name] = (time.time() - t0) / len(qs) * 1000
-        if dense is not None:
-            lists["jina (dense)"] = [[h["pmid"] for h in hits] for hits in dense.search_batch(qs, k=TOP)]
+        if args.hybrid:
+            d = json.load(open(f"{args.out}/dense_top100_{name}.json"))
+            assert d["qids"] == [int(q) for q in s.qid], "dense lists were computed for different questions"
+            lists["jina (dense)"] = d["pmids"]
             lists["hybrid (RRF)"] = [rrf([b, d]) for b, d in zip(lists["BM25"], lists["jina (dense)"])]
         for method, ll in lists.items():
             ranks = np.array([rank_in(l, g) for l, g in zip(ll, gold)])
