@@ -65,6 +65,7 @@ scripts/                      all code (numbered in execution order) and SLURM s
   14_prompt_sensitivity.py                                          answer-prompt wording check
   15_sample_holdout.py run_holdout.sh                               held-out validation set (500 new questions)
   16_coverage.py run_coverage.sh run_coverage_chains.sbatch         coverage experiment (gold papers withheld from the index) and its analysis
+  17_bm25_eval.py 17b_dense_top100.py run_bm25_eval.sbatch          BM25 and BM25 + dense hybrid retrieval baselines (retrieval metrics only)
   run_*.sbatch                                                      SLURM job scripts (L40 / RTX 2080 Ti)
 data/    sample.jsonl corpus.jsonl corpus_distractors.jsonl distractor_pmids.jsonl
 results/ metrics (json/csv), figures (png), tables (md), analysis logs
@@ -123,6 +124,10 @@ python 08_stats.py --systems none vanilla_rag reformulate_rag reasoning_rag fda_
 bash run_coverage.sh smoke   # 16 questions, a few minutes
 bash run_coverage.sh         # 8 jobs
 python 16_coverage.py        # -> ../results/coverage/
+
+# 7. classical retrieval baselines (retrieval metrics only; BM25 needs no GPU)
+sbatch run_bm25_eval.sbatch  # jina top-100 per question -> ../results/bm25/dense_top100_*.json (needs the FAISS index from step 2)
+python 17_bm25_eval.py --hybrid --data_dir ../data --out ../results/bm25   # BM25, jina and hybrid -> retrieval_bm25.csv
 # prompt sensitivity (3 reworded answer prompts x {Vanilla RAG, Baseline 0})
 sbatch run_prompt_sens.sbatch && python 14_prompt_sensitivity.py
 ```
@@ -174,3 +179,6 @@ Systems were frozen and rerun on `data/holdout.jsonl`; all six predictions writt
 ### Coverage experiment (gold papers withheld from the index)
 The gold paper of a fixed random 0 / 50 / 100 % of the held-out questions is removed from the index (nested sets, `common.withheld_qids`); only live PubMed can still supply it. Fixed chains with the same tools as the agent (`pubmed_rag`, `hybrid_rag`) and an agent without PubMed serve as controls. Predictions were written first (four of five held; the PubMed recovery rate was 8-9 %, just below the predicted 10-40 %).
 Vanilla RAG 0.746 / 0.488 / 0.220; retrieve + PubMed chain 0.730 / 0.528 / 0.338; agent + guardrail 0.722 / 0.490 / 0.240; agent without PubMed 0.730 / 0.494 / 0.240. The agent calls PubMed on 10.8 % of the withheld and 3.6 % of the retained questions, so it adds nothing over the same agent without PubMed, and the always-PubMed chain beats it by 0.038 (50 %) and 0.098 (100 %). Tables and figure in `results/coverage/`.
+
+### BM25 and hybrid retrieval baselines (retrieval only)
+Predictions were written first (B2, B4 and B5 held; B1 in part, BM25 Recall@1 was higher than predicted; B3 did not hold). Development / held-out Recall@10: BM25 0.922 / 0.920, `jina` 0.968 / 0.956, equal-weight RRF hybrid 0.954 / 0.958. The dense retriever's advantage lies in the paraphrased questions (Recall@1 on original vs paraphrased: BM25 0.873 / 0.690, `jina` 0.825 / 0.834), and the hybrid does not reliably beat `jina`. BM25 builds in about a second with a 5.7 MB index. We did not run the answer chains or the agent with these retrievers (stopped at the retrieval table for time). Note: on the cluster's generic virtual CPU, FAISS crashes with `Illegal instruction` when more than about 20 queries are searched in one call, so `17b_dense_top100.py` searches in batches of 16 (as `06_baselines.py` does). Tables in `results/bm25/`.
