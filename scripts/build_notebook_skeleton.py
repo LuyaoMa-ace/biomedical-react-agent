@@ -75,7 +75,7 @@ code("""
 """)
 code("""
     # 📦 Packages. Pinned: the ones Colab does not ship (exact versions of everything, torch 2.11.0 and numpy/pandas/scipy/matplotlib included, are in env/requirements.txt).
-    # numpy / pandas / scipy / matplotlib / torch are left at the preinstalled versions to avoid conflicts; the notebook was NOT tested on Colab, only on a laptop (results-only mode).
+    # numpy / pandas / scipy / matplotlib / torch are left at the preinstalled versions to avoid conflicts; tested on a Colab CPU runtime (results-only mode, without the GPU demos) and on a laptop.
     %pip install -q transformers==5.20.2 sentence-transformers==6.2.0 faiss-cpu==1.15.1 langgraph==1.2.16 langchain-core==1.7.0 metapub==0.7.5 datasets==5.1.0 rouge-score==0.1.2
 """)
 md("""
