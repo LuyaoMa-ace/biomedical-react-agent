@@ -89,6 +89,8 @@ code("""
     from IPython.display import Image, Markdown, display
     warnings.filterwarnings("ignore")
 
+    if not Path("scripts").exists() and Path("bigdata_project/scripts").exists():    # Colab: after the runtime restart we are back in /content
+        import os; os.chdir("bigdata_project")
     ROOT = Path(".")
     sys.path.insert(0, str(ROOT / "scripts"))          # our modules: qa_utils, prompts, tools, agent, ...
     pd.set_option("display.width", 200); pd.set_option("display.max_columns", 30)
