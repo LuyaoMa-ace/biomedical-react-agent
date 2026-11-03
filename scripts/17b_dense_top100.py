@@ -15,11 +15,17 @@ args = ap.parse_args()
 os.makedirs(args.out, exist_ok=True)
 
 from tools import LocalRetriever
+
+# 16 queries per FAISS call, as in 06_baselines.py. One call with all 500 questions crashed with "Illegal instruction" inside
+# faiss index.search on the cluster (batches of 20+ queries presumably take FAISS's BLAS code path, which these nodes cannot run).
+BATCH = 16
 dense = LocalRetriever(index_dir=args.index_dir, tag="_5k", device=args.device)
 for name, fname in (("development", "sample.jsonl"), ("held-out", "holdout.jsonl")):
     s, _ = load_data(f"{args.data_dir}/{fname}", f"{args.data_dir}/corpus.jsonl")
     t0 = time.time()
-    hits = dense.search_batch(s.question.tolist(), k=100)
+    qs, hits = s.question.tolist(), []
+    for i in range(0, len(qs), BATCH):                      # small batches: see BATCH
+        hits += dense.search_batch(qs[i:i + BATCH], k=100)
     sec = time.time() - t0
     json.dump({"qids": [int(q) for q in s.qid], "pmids": [[str(h["pmid"]) for h in hh] for hh in hits]},
               open(f"{args.out}/dense_top100_{name}.json", "w"))
