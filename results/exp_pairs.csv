@@ -1,10 +1,10 @@
 comparison,EM_sys,EM_ref,diff,ci_lo,ci_hi,only_sys,only_ref,p_mcnemar,significant
-"guardrail effect, MedGemma scheduler",0.722,0.644,0.078,0.05,0.108,48,9,1.5201952291432616e-07,True
-"guardrail effect, Granite scheduler",0.682,0.518,0.164,0.124,0.204,98,16,1.477416366478583e-15,True
-Granite: local-index guardrail variant vs original guardrail,0.708,0.682,0.026,0.006,0.048,21,8,0.0241195447742939,True
-Granite: local-index guardrail variant vs Vanilla RAG,0.708,0.746,-0.038,-0.064,-0.012,13,32,0.006608822842281368,True
-MedGemma agent + guardrail vs Vanilla RAG,0.722,0.746,-0.024,-0.048,0.0,13,25,0.07295138851623051,False
-MedGemma agent + guardrail vs index-only agent,0.722,0.726,-0.004,-0.026,0.018,14,16,0.8555355519056321,False
-Granite agent + guardrail vs Vanilla RAG,0.682,0.746,-0.064,-0.094,-0.036,13,45,3.011590962911926e-05,True
-Granite vs MedGemma scheduler (both + guardrail),0.682,0.722,-0.04,-0.072,-0.01,22,42,0.01685819004428113,True
-index-only agent vs Vanilla RAG,0.726,0.746,-0.02,-0.046,0.006,16,26,0.16414940178310644,False
+"guardrail effect, MedGemma scheduler",0.742,0.684,0.058,0.032,0.084,37,8,1.5374090196473844e-05,True
+"guardrail effect, Granite scheduler",0.7,0.55,0.15,0.114,0.188,88,13,7.52058652903178e-15,True
+Granite: local-index guardrail variant vs original guardrail,0.744,0.7,0.044,0.022,0.068,29,7,0.00031255115754902363,True
+Granite: local-index guardrail variant vs Vanilla RAG,0.744,0.764,-0.02,-0.046,0.006,16,26,0.16414940178310644,False
+MedGemma agent + guardrail vs Vanilla RAG,0.742,0.764,-0.022,-0.046,0.002,13,24,0.09887174959294498,False
+MedGemma agent + guardrail vs index-only agent,0.742,0.752,-0.01,-0.03,0.01,10,15,0.42435622215270996,False
+Granite agent + guardrail vs Vanilla RAG,0.7,0.764,-0.064,-0.096,-0.034,16,48,7.733076881287027e-05,True
+Granite vs MedGemma scheduler (both + guardrail),0.7,0.742,-0.042,-0.072,-0.012,17,38,0.006455803109956635,True
+index-only agent vs Vanilla RAG,0.752,0.764,-0.012,-0.036,0.012,15,21,0.4050322461407632,False
